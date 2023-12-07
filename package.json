@@ -4,9 +4,10 @@
   "description": "",
   "main": "dist-server/app.js",
   "scripts": {
-    "start": "npm run watch:dev",
+    "start": "npm run prod",
     "watch:dev": "nodemon",
     "dev": "NODE_ENV=development npm-run-all build server",
+    "prod": "NODE_ENV=production npm-run-all build server",
     "build": "npm-run-all clean transpile",
     "server": "node ./dist-server/app.js",
     "clean": "rimraf dist-server",
