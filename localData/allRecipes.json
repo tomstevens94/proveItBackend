@@ -1,0 +1,354 @@
+[
+  {
+    "_id": "rec-hj322h3j23kj4",
+    "title": "Ultimate Sourdough",
+    "createdByUserId": "user-hj852h1j23gj4",
+    "communityRating": 4.7,
+    "difficulty": "intermediate",
+    "imageUrl": "https://i.ibb.co/ynrjtX9/Sourdough-bread.webp",
+    "categories": ["bread", "sourdough"],
+    "duration": {
+      "unit": "hr",
+      "minValue": 12,
+      "maxValue": 24
+    },
+    "ingredients": [
+      {
+        "id": "ing-87ds6af786af",
+        "title": "Bread flour",
+        "isBakersPercentageSource": true,
+        "amount": {
+          "unit": "g",
+          "value": 500
+        }
+      },
+      {
+        "id": "ing-sd78s8df78sfd",
+        "title": "Sourdough starter",
+        "amount": {
+          "unit": "g",
+          "value": 100
+        }
+      },
+      {
+        "id": "ing-768adsf87adsf",
+        "title": "Water",
+        "amount": {
+          "unit": "g",
+          "value": 350
+        },
+        "recommendedTemperature": {
+          "unit": "c",
+          "value": 25
+        }
+      },
+      {
+        "id": "ing-97s6dfsdf8rt",
+        "title": "Salt",
+        "amount": {
+          "unit": "g",
+          "value": 25
+        }
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-78f7a78df7a8sdf",
+        "title": "Mix the Flour and Water",
+        "description": "Mix the flour and water together in a large bowl until there are no visible lumps of dry flour. The dough should be shaggy and rough, and very sticky.",
+        "tips": [
+          "Using a heavier bowl with make some of the following steps easier.",
+          "You don't need to knead at this stage.",
+          "The dough will be very sticky, use one hand to mix and keep one clean.",
+          "Once mixed, use your clean hand to scrape the dough from your other hand with a blunt knife."
+        ]
+      },
+      {
+        "id": "step-978fdsaf7a0g",
+        "title": "Autolyse",
+        "description": "Cover the bowl with a damp towel and leave for 30 minutes to allow the flour to hydrate and for the dough to relax.",
+        "inactiveDuration": {
+          "unit": "min",
+          "minValue": 30,
+          "maxValue": 45
+        }
+      },
+      {
+        "id": "step-89fg778s89sdadf",
+        "title": "Mix the Remaining Ingredients",
+        "description": "Begin to mix the starter into the dough. Once this is almost combined, add the salt and knead this for 10-15 minutes until the dough becomes slightly less sticky, and a lot smoother.",
+        "tips": [
+          "The dough should remain sticky, try to avoid adding any additional flour.",
+          "Kneading dough this sticky is more like mixing than traditional kneading.",
+          "Keep the dough in your bowl to avoid making a mess."
+        ]
+      },
+      {
+        "id": "step-78f7a78df2545a8sdf",
+        "title": "Stretch and Fold",
+        "description": "Using slightly wet hands, reach under the dough and pull up to release from the bowl. Allow the dough to relax and stretch downwards, and fold it over itself as you place it back into the bowl. Turn the bowl 90 degrees and repeat until the dough no longer stretches.",
+        "repititions": {
+          "min": 2,
+          "max": 4,
+          "timeBetween": {
+            "unit": "min",
+            "minValue": 30,
+            "maxValue": 45
+          },
+          "addTimeAfter": true
+        },
+        "tips": [
+          "Allow the dough to naturally stretch, without excessive force or tearing.",
+          "This is strengthening the network of gluten, which will eventually hold all the gas in the bread when it rises."
+        ]
+      },
+      {
+        "id": "step-977h78j6df7ghjf",
+        "title": "Pre-shaping",
+        "description": "Gently empty your dough onto an unfloured, dry surface. Use a bench scraper to push the dough along the worktop, back and forth until it forms a smooth, tight ball of dough.",
+        "tips": [
+          "This step takes some getting used to, but it's important not to use any flour or water to stop the dough sticking.",
+          "A bench scraper is essential to not make a mess with such a sticky dough at this stage."
+        ]
+      },
+      {
+        "id": "step-987hgdfgh8d897fgh",
+        "title": "Final Rest",
+        "description": "Place your bowl over the dough and allow it to rest for 20-30 mins.",
+        "inactiveDuration": {
+          "unit": "min",
+          "minValue": 20,
+          "maxValue": 30
+        }
+      },
+      {
+        "id": "step-897gsf7sdf89dfgs",
+        "title": "Flour your Bread Basket",
+        "description": "Place a clean cloth into your bread basket with enough overlap to cover the basket once the bread is inside. Generously dust with rice flour.",
+        "tips": [
+          "You can use wheat flour if you don't have rice flour, but this will slowly absorb back into the break and could cause it to stick."
+        ]
+      },
+      {
+        "id": "step-089sh7hd98fghdf",
+        "title": "Shaping",
+        "description": "Lightly flour your worktop, and use your bench scraper to quickly and smoothly remove the dough from the worktop. Place it smooth side down onto the floured surface. The side facing up should remain flour free. The dough should be completely free to move on the worktop and not be stuck. Pull the right side and fold this over to stick into the middle. Do the same on the left side. Grab the top edge, and begin to roll the dough down, applying tension, but without tearing it. If it doesn't stick to itself once it's rolled up, pinch the seam together. Place this into your floured bread basket, dust the top with more rice flour, and cover with the overlapping cloth.",
+        "tips": [
+          "When you flip the dough over onto the floured surface, take care to keep the top side flour free, as this will need to remain sticky to keep it's shape.",
+          "The purpose of this step is to create more tension, strengthening the gluten further. It will also allow your dough to better hold it's shape and rise up, instead of spread out as it cooks!",
+          "This is the most difficult step, so take your time and practice!",
+          "Flour will be essential to stop the dough from sticking to everything, but try to use as little as possible."
+        ]
+      },
+      {
+        "id": "step-dfa87asd897as879df",
+        "title": "Proving",
+        "description": "Place your dough in a warm place and prove for around 4 hours",
+        "inactiveDuration": {
+          "unit": "hr",
+          "minValue": 4,
+          "maxValue": 8
+        },
+        "tips": [
+          "Room temperature is different everywhere. The ideal temperature is around 25'C",
+          "Proving times vary depending on a lot of factors. These timings are just a rough recommeendation. If you gently poke the dough with a finger, it should slowly rise almost all the way back. If it bounces back immediately, let it prove some more.",
+          "If you a have a cold kitchen, place a pan of hot water in the oven and prove your bread in there.",
+          "Consider investing in a thermometer to make sure your proving at the perfect temperature."
+        ]
+      },
+      {
+        "id": "step-78s9dfg879sdfg",
+        "title": "Fermentation",
+        "description": "Once your dough has finished proving, place it in the fridge for anywhere between 4-12 hours, ideally overnight.",
+        "inactiveDuration": {
+          "unit": "hr",
+          "minValue": 6,
+          "maxValue": 18
+        },
+        "tips": [
+          "Cold dough is slightly easier to work with as it will slightly firm up when cold."
+        ]
+      },
+      {
+        "id": "step-987d87sd9f879sdfg",
+        "title": "Bake Covered",
+        "description": "Place a heavy dutch oven with it's lid in your oven, and preheat it for at least 45 mins at 230'C. If your oven can't be set that high, set it to as high as it goes. When this is preheated, remove your dough from the fridge, place a long piece of greaseproof paper over the basket, and place something like a wooden chopping board over that. Turn this over, remove the basket, score the dough, and use the greaseproof paper to lift the dough safely into the preheated dutch oven. Bake covered for 25 mins",
+        "inactiveDuration": {
+          "unit": "min",
+          "value": 25
+        },
+        "tips": [
+          "Using greaseproof paper will make it much easier and safer to remove your bread once it's ready."
+        ]
+      },
+      {
+        "id": "step-asdf879asdf87987ads",
+        "title": "Bake Uncovered",
+        "description": "Remove the lid from the pot, and bake the bread uncovered for another 20-30 minutes until a dark crust has formed.",
+        "inactiveDuration": {
+          "unit": "min",
+          "minValue": 20,
+          "maxValue": 30
+        },
+        "tips": [
+          "Optionally, you can remove the dough from the dutch oven and place directly on the oven grates for the last 10 mintues of cooking to get a more even crust."
+        ]
+      },
+      {
+        "id": "step-df897gsdfg78sg",
+        "title": "Cool",
+        "inactiveDuration": {
+          "unit": "hr",
+          "minValue": 4,
+          "maxValue": 12
+        },
+        "description": "Once the bread is cooked, place on a wire rack and allow to cool completely before slicing.",
+        "tips": [
+          "There's nothing quite like fresh bread, if you feel the need to cut a slice straight away, you won't ruin the bread"
+        ]
+      }
+    ]
+  },
+  {
+    "_id": "rec-897asddas98fadsf",
+    "title": "Sourdough Foccaccia",
+    "createdByUserId": "user-hj852h1j23gj4",
+    "communityRating": 4.2,
+    "difficulty": "beginner",
+    "imageUrl": "https://i.ibb.co/PM9XkxQ/Focaccia-2.jpg",
+    "categories": ["bread", "sourdough", "foccaccia"],
+    "duration": {
+      "unit": "hr",
+      "minValue": 3,
+      "maxValue": 6
+    },
+    "ingredients": [
+      {
+        "id": "ing-87ds6af786af",
+        "title": "Bread flour",
+        "isBakersPercentageSource": true,
+        "amount": {
+          "unit": "g",
+          "value": 500
+        }
+      },
+      {
+        "id": "ing-sd78s8df78sfd",
+        "title": "Sourdough starter",
+        "amount": {
+          "unit": "g",
+          "value": 100
+        }
+      },
+      {
+        "id": "ing-768adsf87adsf",
+        "title": "Water",
+        "amount": {
+          "unit": "g",
+          "value": 350
+        },
+        "recommendedTemperature": {
+          "unit": "c",
+          "value": 25
+        }
+      },
+      {
+        "id": "ing-97s6dfsdf8rt",
+        "title": "Salt",
+        "amount": {
+          "unit": "g",
+          "value": 25
+        }
+      },
+      {
+        "id": "ing-87sgf789s978fd",
+        "title": "Olive oil",
+        "amount": {
+          "unit": "g",
+          "value": 100
+        }
+      }
+    ],
+    "steps": [
+      {
+        "id": "step-78f7a78df7a8sdf",
+        "title": "Mix the Flour and Water",
+        "description": "Mix the flour and water together in a large bowl until there are no visible lumps of dry flour. The dough should be shaggy and rough, and very sticky.",
+        "tips": [
+          "Using a heavier bowl with make some of the following steps easier.",
+          "You don't need to knead at this stage.",
+          "The dough will be very sticky, use one hand to mix and keep one clean.",
+          "Once mixed, use your clean hand to scrape the dough from your other hand with a blunt knife."
+        ]
+      },
+      {
+        "id": "step-978fdsaf7a0g",
+        "title": "Autolyse",
+        "description": "Cover the bowl with a damp towel and leave for 30 minutes to allow the flour to hydrate and for the dough to relax.",
+        "inactiveDuration": {
+          "unit": "min",
+          "minValue": 30,
+          "maxValue": 45
+        }
+      },
+      {
+        "id": "step-89fg778s89sdadf",
+        "title": "Mix the Remaining Ingredients",
+        "description": "Begin to mix the starter into the dough. Once this is almost combined, add the salt and olive oil and knead this for 10-15 minutes until the dough becomes slightly less sticky, and a lot smoother.",
+        "tips": [
+          "The dough should remain sticky, try to avoid adding any additional flour.",
+          "Kneading dough this sticky is more like mixing than traditional kneading.",
+          "Keep the dough in your bowl to avoid making a mess."
+        ]
+      },
+      {
+        "id": "step-78f7a78df2545a8sdf",
+        "title": "Stretch and Fold",
+        "description": "Using slightly wet hands, reach under the dough and pull up to release from the bowl. Allow the dough to relax and stretch downwards, and fold it over itself as you place it back into the bowl. Turn the bowl 90 degrees and repeat until the dough no longer stretches.",
+        "repititions": {
+          "min": 2,
+          "max": 4,
+          "timeBetween": {
+            "unit": "min",
+            "minValue": 30,
+            "maxValue": 45
+          },
+          "addTimeAfter": true
+        },
+        "tips": [
+          "Allow the dough to naturally stretch, without excessive force or tearing.",
+          "This is strengthening the network of gluten, which will eventually hold all the gas in the bread when it rises."
+        ]
+      },
+      {
+        "id": "step-dfa87asd897as879df",
+        "title": "Proving",
+        "description": "Put a generous amount of olive oil in a baking tray and place the dough in the tray. Ensure the dough is covered with oil so it doesn't stick to the tray. Cover the tray and allow this to prove for 2-4 hours.",
+        "inactiveDuration": {
+          "unit": "hr",
+          "minValue": 2,
+          "maxValue": 4
+        },
+        "tips": [
+          "Room temperature is different everywhere. The ideal temperature is around 25'C",
+          "Proving times vary depending on a lot of factors. These timings are just a rough recommeendation. If you gently poke the dough with a finger, it should slowly rise almost all the way back. If it bounces back immediately, let it prove some more.",
+          "If you a have a cold kitchen, place a pan of hot water in the oven and prove your bread in there.",
+          "Consider investing in a thermometer to make sure your proving at the perfect temperature."
+        ]
+      },
+      {
+        "id": "step-asdf879asdf87987ads",
+        "title": "Bake",
+        "description": "Remove the lid from the pot, and bake the bread uncovered for another 20-30 minutes until a dark crust has formed.",
+        "inactiveDuration": {
+          "unit": "min",
+          "minValue": 20,
+          "maxValue": 30
+        },
+        "tips": [
+          "Optionally, you can remove the dough from the dutch oven and place directly on the oven grates for the last 10 mintues of cooking to get a more even crust."
+        ]
+      }
+    ]
+  }
+]

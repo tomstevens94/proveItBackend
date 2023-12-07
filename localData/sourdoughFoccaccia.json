@@ -1,0 +1,115 @@
+{
+  "id": "rec-897asddas98fadsf",
+  "title": "Sourdough Foccaccia",
+  "createdByUserId": "user-hj852h1j23gj4",
+  "communityRating": "4.2",
+  "difficulty": "intermediate",
+  "imageUrl": "https://i.ibb.co/PM9XkxQ/Focaccia-2.jpg",
+  "categories": ["bread", "sourdough", "foccaccia"],
+  "duration": {
+    "unit": "hr",
+    "minValue": "12",
+    "maxValue": "24"
+  },
+  "ingredients": [
+    {
+      "id": "ing-87ds6af786af",
+      "title": "Bread flour",
+      "isBakersPercentageSource": true,
+      "amount": { "unit": "g", "value": "500" }
+    },
+    {
+      "id": "ing-sd78s8df78sfd",
+      "title": "Sourdough starter",
+      "amount": { "unit": "g", "value": "100" }
+    },
+    {
+      "id": "ing-768adsf87adsf",
+      "title": "Water",
+      "amount": { "unit": "g", "value": "400" },
+      "recommendedTemperature": { "unit": "c", "value": "25" }
+    },
+    {
+      "id": "ing-97s6dfsdf8rt",
+      "title": "Salt",
+      "amount": { "unit": "g", "value": "10" }
+    },
+    {
+      "id": "ing-97s6dfsdf8rt",
+      "title": "Olive oil",
+      "amount": { "unit": "tbsp", "value": "3" }
+    }
+  ],
+  "steps": [
+    {
+      "id": "step-78f7a78df7a8sdf",
+      "title": "Mix the Flour and Water",
+      "description": "Place the starter, salt, and water in a large bowl. Stir with a spatula to combine — it doesn’t have to be uniformly mixed. Add the flour. Mix again until the flour is completely incorporated."
+    },
+    {
+      "id": "step-978fdsaf7a0g",
+      "title": "Autolyse",
+      "description": "Cover the bowl with a damp towel and leave for 30 minutes to allow the flour to hydrate and for the dough to relax.",
+      "inactiveDuration": {
+        "unit": "min",
+        "minValue": "30",
+        "maxValue": "45"
+      }
+    },
+    {
+      "id": "step-78f7a78df2545a8sdf",
+      "title": "Stretch and Fold",
+      "description": "Using slightly wet hands, reach under the dough and pull up to release from the bowl. Allow the dough to relax and stretch downwards, and fold it over itself as you place it back into the bowl. Turn the bowl 90 degrees and repeat until the dough no longer stretches.",
+      "tips": [
+        "Allow the dough to naturally stretch, without excessive force or tearing.",
+        "This is strengthening the network of gluten, which will eventually hold all the gas in the bread when it rises."
+      ]
+    },
+    {
+      "id": "step-g7sd7fg789sdfg",
+      "title": "Bulk fermentation",
+      "description": "Drizzle with half the olive oil and rub to coat. Cover and set aside to rise at room temperature until the dough has doubled in volume.",
+      "inactiveDuration": {
+        "unit": "hr",
+        "minValue": "4",
+        "maxValue": "12"
+      },
+      "tips": [
+        "Room temperature is different everywhere. The ideal temperature is around 25'C, but a cooler room is not a problem, this just means your dough will take longer to double in volume."
+      ]
+    },
+    {
+      "id": "step-977h78j6df7ghjf",
+      "title": "Prepare your over tray",
+      "description": "Line your oven tray with more olive oil and gently place your dough into the pan."
+    },
+    {
+      "id": "step-987hgdfgh8d897fgh",
+      "title": "Final rest",
+      "description": "Cover your tray and allow it to rest until almost doubled in volume again. Preheat your oven to 220'C around 30 mins before this happens.",
+      "inactiveDuration": {
+        "unit": "hr",
+        "minValue": "3",
+        "maxValue": "6"
+      }
+    },
+    {
+      "id": "step-897gsf7sdf89dfgs",
+      "title": "Dimpling",
+      "description": "Lightly cover your hands with olive oil, and poke the dough using all fingers. Repeat until the dough is covered evenly with dimples and the dough is an even thickness in the pan. Sprinkle generously with coarse sea salt.",
+      "tips": [
+        "During this step, you can gently move your fingers as you poke to release the dough from the bottom of the pan if it has stuck."
+      ]
+    },
+    {
+      "id": "step-asdf879asdf87987ads",
+      "title": "Bake",
+      "description": "Bake uncovered until the dough crispy on top and evenly browned. Immediately remove from the pan and allow to cool on a wire rack to avoid absorbing excess oil.",
+      "inactiveDuration": {
+        "unit": "min",
+        "minValue": "20",
+        "maxValue": "30"
+      }
+    }
+  ]
+}
