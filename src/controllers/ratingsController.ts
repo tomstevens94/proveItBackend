@@ -1,6 +1,6 @@
-import { RequestHandler } from 'express';
-import { HTTPStatusCodes } from '../configs/HTTPStatusCodes';
-import UserModel from '../models/UserModel';
+import { RequestHandler } from "express";
+import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
+import UserModel from "../models/UserModel";
 
 export const postRecipeRating: RequestHandler = async (req, res) => {
   if (!req.body) return res.sendStatus(HTTPStatusCodes.BadRequest);
@@ -10,15 +10,15 @@ export const postRecipeRating: RequestHandler = async (req, res) => {
   // Rating should always be above 0 (1-5)
   if (!rating || !recipeId) return res.sendStatus(HTTPStatusCodes.BadRequest);
 
-  const userId = req.headers['user-id'];
+  const userId = req.headers["user-id"];
 
   console.log(
-    'User: ',
+    "User: ",
     userId,
-    'rated recipe: ',
+    "rated recipe: ",
     recipeId,
-    'with rating of: ',
-    rating,
+    "with rating of: ",
+    rating
   );
 
   try {
@@ -30,7 +30,7 @@ export const postRecipeRating: RequestHandler = async (req, res) => {
     const existingRatings = existingUser.ratedRecipes;
 
     const existingRatingIndex = existingRatings.findIndex(
-      rating => rating.recipeId === recipeId,
+      (rating) => rating.recipeId === recipeId
     );
 
     if (existingRatingIndex !== -1)
@@ -42,7 +42,7 @@ export const postRecipeRating: RequestHandler = async (req, res) => {
 
     return res.sendStatus(HTTPStatusCodes.Created);
   } catch (err: any) {
-    console.log('Error in ratingsController: ', err);
+    console.log("Error in ratingsController: ", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };
