@@ -28,8 +28,8 @@ async function connectToDatabase() {
   } catch (err) {
     console.log("Error connecting to db: ", err);
   } finally {
-    console.log("Client closed/connections removed");
-    await client.close();
+    // console.log("Client closed/connections removed");
+    // await client.close();
   }
 }
 

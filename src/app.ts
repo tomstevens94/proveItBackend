@@ -17,7 +17,10 @@ setupDatabaseConnection().then(() =>
   app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
 );
 initializeApp(firebaseAppConfig);
-logIpAddress();
+
+if (process.env.NODE_ENV === "development") {
+  logIpAddress();
+}
 
 const app = express();
 
