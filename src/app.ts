@@ -13,10 +13,10 @@ import { logIpAddress } from "./utils/logLocalIpAddress";
 
 const { PORT } = process.env;
 
-setupDatabaseConnection().then(() =>
-  app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
-);
-initializeApp(firebaseAppConfig);
+// setupDatabaseConnection().then(() =>
+//   app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+// );
+// initializeApp(firebaseAppConfig);
 
 if (process.env.NODE_ENV === "development") {
   logIpAddress();
