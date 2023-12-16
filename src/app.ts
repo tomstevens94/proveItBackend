@@ -13,7 +13,9 @@ import { logIpAddress } from "./utils/logLocalIpAddress";
 
 const { PORT } = process.env;
 
-setupDatabaseConnection();
+setupDatabaseConnection().then(() =>
+  app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+);
 initializeApp(firebaseAppConfig);
 logIpAddress();
 
@@ -29,5 +31,3 @@ app.use(verifyAuthentication);
 app.use("/api/ratings", ratingsRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/user", userRouter);
-
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
