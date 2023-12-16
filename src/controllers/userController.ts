@@ -25,28 +25,27 @@ export const deleteUserData: RequestHandler = async (req, res) => {
 };
 
 export const getUserData: RequestHandler = async (req, res) => {
-  return res.sendStatus(200);
-  // const uid = req.headers['user-id'];
+  const uid = req.headers["user-id"];
 
-  // if (!uid) {
-  //   console.log('No userId in request headers - check verification middleware');
-  //   return res.sendStatus(HTTPStatusCodes.Unauthorized);
-  // }
+  if (!uid) {
+    console.log("No userId in request headers - check verification middleware");
+    return res.sendStatus(HTTPStatusCodes.Unauthorized);
+  }
 
-  // try {
-  //   const storedUserData = await UserModel.findOne({ uid });
+  try {
+    const storedUserData = await UserModel.findOne({ uid });
 
-  //   if (!storedUserData)
-  //     return res.sendStatus(HTTPStatusCodes.InternalServerError);
+    if (!storedUserData)
+      return res.sendStatus(HTTPStatusCodes.InternalServerError);
 
-  //   console.log('User data found in db');
+    console.log("User data found in db");
 
-  //   return res.status(HTTPStatusCodes.OK).json(storedUserData);
-  // } catch (err: any) {
-  //   console.log('Error getting user data: ', err);
+    return res.status(HTTPStatusCodes.OK).json(storedUserData);
+  } catch (err: any) {
+    console.log("Error getting user data: ", err);
 
-  //   return res.sendStatus(HTTPStatusCodes.InternalServerError);
-  // }
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
+  }
 };
 
 export const updateUserData: RequestHandler = async (req, res) => {
