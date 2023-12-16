@@ -30,4 +30,4 @@ app.use("/api/ratings", ratingsRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/user", userRouter);
 
-app.listen(1302, () => console.log(`Listening on port ${PORT}`));
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
