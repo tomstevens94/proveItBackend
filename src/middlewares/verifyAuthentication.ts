@@ -1,15 +1,15 @@
-import { RequestHandler } from 'express';
-import { HTTPStatusCodes } from '../configs/HTTPStatusCodes';
-import UserModel from '../models/UserModel';
-import { verifyAuthenticatedIdToken } from '../utils/verifyAuthenticatedIdToken';
+import { RequestHandler } from "express";
+import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
+import UserModel from "../models/UserModel";
+import { verifyAuthenticatedIdToken } from "../utils/verifyAuthenticatedIdToken";
 
 export const verifyAuthentication: RequestHandler = async (req, res, next) => {
-  console.log('Attempting to verify authentication');
+  console.log("Attempting to verify authentication");
 
   const idToken = req.headers.authorization;
 
   if (!idToken) {
-    console.log('Unable to verify - No ID token supplied in request');
+    console.log("Unable to verify - No ID token supplied in request");
     return res.sendStatus(HTTPStatusCodes.Unauthorized);
   }
 
@@ -20,9 +20,9 @@ export const verifyAuthentication: RequestHandler = async (req, res, next) => {
     const existingUser = await UserModel.exists({ uid });
 
     if (existingUser) {
-      console.log('Verified existing user');
+      console.log("Verified existing user");
     } else {
-      console.log('New user, attempting to create in db');
+      console.log("New user, attempting to create in db");
       await UserModel.create({
         uid,
         completedRecipes: [],
@@ -30,14 +30,14 @@ export const verifyAuthentication: RequestHandler = async (req, res, next) => {
         photoUrl: userRecord.photoURL,
         displayName: userRecord.displayName,
       });
-      console.log('New user created with ID: ', uid);
+      console.log("New user created with ID:", uid);
     }
 
-    req.headers['user-id'] = uid;
+    req.headers["user-id"] = uid;
 
     return next();
   } catch (err: any) {
-    console.log(err, 'Unable to verify IDToken');
+    console.log(err, "Unable to verify IDToken");
 
     return res.sendStatus(HTTPStatusCodes.Unauthorized);
   }

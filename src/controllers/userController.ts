@@ -19,7 +19,7 @@ export const deleteUserData: RequestHandler = async (req, res) => {
 
     return res.sendStatus(HTTPStatusCodes.OK);
   } catch (err: any) {
-    console.log("Error deleting account: ", err);
+    console.log("Error deleting account:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };
@@ -42,7 +42,7 @@ export const getUserData: RequestHandler = async (req, res) => {
 
     return res.status(HTTPStatusCodes.OK).json(storedUserData);
   } catch (err: any) {
-    console.log("Error getting user data: ", err);
+    console.log("Error getting user data:", err);
 
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
@@ -66,7 +66,7 @@ export const updateUserData: RequestHandler = async (req, res) => {
 
     return res.sendStatus(HTTPStatusCodes.OK);
   } catch (err: any) {
-    console.log("Error updating user data: ", err);
+    console.log("Error updating user data:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };

@@ -1,6 +1,6 @@
-import axios from 'axios';
-import 'dotenv/config';
-import { readFile, unlink } from 'node:fs/promises';
+import axios from "axios";
+import "dotenv/config";
+import { readFile, unlink } from "node:fs/promises";
 
 const { IMGBB_API_URL, IMGBB_API_KEY } = process.env;
 
@@ -41,17 +41,17 @@ export const uploadImage = async ({
     const data = await readFile(path);
 
     const formData = new FormData();
-    formData.append('image', data.toString('base64'));
+    formData.append("image", data.toString("base64"));
 
     const result = await axios.post(
       `${IMGBB_API_URL}?key=${IMGBB_API_KEY}`,
-      formData,
+      formData
     );
     unlink(path);
 
     return result.data;
   } catch (err: any) {
-    console.log('Error uploading image: ', err?.response);
+    console.log("Error uploading image:", err?.response);
     unlink(path);
 
     throw err;

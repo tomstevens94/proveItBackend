@@ -13,11 +13,11 @@ export const postRecipeRating: RequestHandler = async (req, res) => {
   const userId = req.headers["user-id"];
 
   console.log(
-    "User: ",
+    "User:",
     userId,
-    "rated recipe: ",
+    "rated recipe:",
     recipeId,
-    "with rating of: ",
+    "with rating of:",
     rating
   );
 
@@ -42,7 +42,7 @@ export const postRecipeRating: RequestHandler = async (req, res) => {
 
     return res.sendStatus(HTTPStatusCodes.Created);
   } catch (err: any) {
-    console.log("Error in ratingsController: ", err);
+    console.log("Error in ratingsController:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };

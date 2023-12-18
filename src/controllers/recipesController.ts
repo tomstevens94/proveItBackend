@@ -87,7 +87,7 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
 
   const { recipeId } = req.body;
 
-  console.log("User: ", userId, "completed recipe: ", recipeId);
+  console.log("User:", userId, "completed recipe:", recipeId);
 
   try {
     const updatedUser = await UserModel.updateOne(
@@ -124,11 +124,11 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
 //     const imageUrl = imageUploadResult.data.url;
 
 //     const createdRecipe = await RecipeModel.create({ ...recipe, imageUrl });
-//     console.log('Recipe created: ', createdRecipe);
+//     console.log('Recipe created:', createdRecipe);
 
 //     return res.sendStatus(HTTPStatusCodes.OK);
 //   } catch (err: any) {
-//     console.log('Error in controller: ', err.data);
+//     console.log('Error in controller:', err.data);
 //     return res.sendStatus(HTTPStatusCodes.BadRequest);
 //   }
 // };

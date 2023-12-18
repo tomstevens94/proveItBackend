@@ -26,7 +26,7 @@ export async function setupDatabaseConnection() {
     await mongoose.connect(uri, { dbName: DATABASE_NAME });
     console.log("Connected to MongoDB/Mongoose");
   } catch (err) {
-    console.log("Error connecting to db: ", err);
+    console.log("Error connecting to db:", err);
   } finally {
     console.log("Client closed/connections removed");
     await client.close();
