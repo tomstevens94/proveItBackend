@@ -13,8 +13,6 @@ import { logIpAddress } from "./utils/logLocalIpAddress";
 
 const { PORT } = process.env;
 
-// setupDatabaseConnection().then(() =>
-// );
 initializeApp(firebaseAppConfig);
 
 if (process.env.NODE_ENV === "development") {
@@ -22,7 +20,6 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const app = express();
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
 // Middleware
 app.use(json());
@@ -35,3 +32,7 @@ app.use("/api/ratings", ratingsRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/user", userRouter);
 app.use("/api/test", (req, res) => res.sendStatus(200));
+
+setupDatabaseConnection().then(() =>
+  app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+);

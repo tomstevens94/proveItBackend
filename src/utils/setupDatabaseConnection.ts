@@ -20,7 +20,7 @@ const client = new MongoClient(uri, {
   },
 });
 
-async function connectToDatabase() {
+export async function setupDatabaseConnection() {
   try {
     console.log("Connecting to database. . .");
     await mongoose.connect(uri, { dbName: DATABASE_NAME });
@@ -28,12 +28,7 @@ async function connectToDatabase() {
   } catch (err) {
     console.log("Error connecting to db: ", err);
   } finally {
-    // console.log("Client closed/connections removed");
-    // await client.close();
+    console.log("Client closed/connections removed");
+    await client.close();
   }
 }
-
-export const setupDatabaseConnection = () =>
-  connectToDatabase().catch((err) =>
-    console.log("Error connecting to database: ", err)
-  );
