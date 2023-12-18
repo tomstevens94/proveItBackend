@@ -15,7 +15,7 @@ const { PORT } = process.env;
 
 // setupDatabaseConnection().then(() =>
 // );
-// initializeApp(firebaseAppConfig);
+initializeApp(firebaseAppConfig);
 
 if (process.env.NODE_ENV === "development") {
   logIpAddress();
@@ -34,3 +34,4 @@ app.use(verifyAuthentication);
 app.use("/api/ratings", ratingsRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/user", userRouter);
+app.use("/api/test", (req, res) => res.sendStatus(200));
