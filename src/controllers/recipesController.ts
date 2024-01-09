@@ -1,28 +1,24 @@
 import { RequestHandler } from "express";
 import RecipeModel from "../models/RecipeModel";
-import allRecipesJson from "../../localData/allRecipes.json";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import UserModel from "../models/UserModel";
 import { uploadImage } from "../utils/uploadImage";
 
-const localDataMode = false;
+export const searchRecipes: RequestHandler = async (req, res) => {
+  try {
+    const searchParams = req.body;
+    console.log(searchParams);
 
-export const getAllRecipes: RequestHandler = async (_, res) => {
-  let allRecipes;
+    const allRecipes = await RecipeModel.find({});
 
-  if (localDataMode) {
-    allRecipes = allRecipesJson;
-  } else {
-    allRecipes = await RecipeModel.find({});
-  }
-
-  if (allRecipes.length > 0) {
-    return res.status(HTTPStatusCodes.OK).json(allRecipes);
-  } else {
-    return res
-      .status(HTTPStatusCodes.NotFound)
-      .json("We were unable to find any recipes");
-  }
+    if (allRecipes.length > 0) {
+      return res.status(HTTPStatusCodes.OK).json(allRecipes);
+    } else {
+      return res
+        .status(HTTPStatusCodes.NotFound)
+        .json("We were unable to find any recipes");
+    }
+  } catch (err) {}
 };
 
 export const getRecipeById: RequestHandler = async (req, res) => {
@@ -43,11 +39,7 @@ export const getRecipeById: RequestHandler = async (req, res) => {
   if (recipeIdArray.length === 1) {
     let recipe;
 
-    if (localDataMode) {
-      recipe = allRecipesJson.find(({ _id }) => _id === recipeId);
-    } else {
-      recipe = await RecipeModel.findOne({ _id: recipeId }).exec();
-    }
+    recipe = await RecipeModel.findOne({ _id: recipeId }).exec();
 
     if (recipe) {
       return res.status(HTTPStatusCodes.OK).json(recipe);
@@ -59,10 +51,7 @@ export const getRecipeById: RequestHandler = async (req, res) => {
   } else {
     let recipes;
 
-    if (localDataMode) {
-    } else {
-      recipes = await RecipeModel.find({ _id: { $in: recipeIdArray } }).exec();
-    }
+    recipes = await RecipeModel.find({ _id: { $in: recipeIdArray } }).exec();
 
     if (recipes) {
       return res.status(200).json(recipes);

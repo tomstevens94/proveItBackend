@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  getAllRecipes,
+  searchRecipes,
   getRecipeById,
   postRecipeIsComplete,
   // postNewRecipe,
@@ -18,8 +18,8 @@ import {
 
 const router = express.Router();
 
-router.get("/", getAllRecipes);
 router.get("/:recipeId", getRecipeById);
+router.post("/search", searchRecipes);
 router.post("/complete", postRecipeIsComplete);
 // router.post("/new", upload, postNewRecipe);
 
