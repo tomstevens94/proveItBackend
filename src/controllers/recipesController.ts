@@ -3,22 +3,26 @@ import RecipeModel from "../models/RecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import UserModel from "../models/UserModel";
 import { uploadImage } from "../utils/uploadImage";
+import { createQueryFromRecipeSearchParams } from "../utils/search/recipeSearch";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
     const searchParams = req.body;
     console.log(searchParams);
 
-    const allRecipes = await RecipeModel.find({});
+    const searchQuery = createQueryFromRecipeSearchParams(searchParams);
 
-    if (allRecipes.length > 0) {
-      return res.status(HTTPStatusCodes.OK).json(allRecipes);
-    } else {
-      return res
-        .status(HTTPStatusCodes.NotFound)
-        .json("We were unable to find any recipes");
-    }
-  } catch (err) {}
+    const searchedRecipes = await RecipeModel.find(searchQuery);
+
+    console.log("Recipes found:", searchedRecipes.length);
+
+    return res.status(HTTPStatusCodes.OK).json(searchedRecipes);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(HTTPStatusCodes.NotFound)
+      .json("We were unable to find any recipes");
+  }
 };
 
 export const getRecipeById: RequestHandler = async (req, res) => {

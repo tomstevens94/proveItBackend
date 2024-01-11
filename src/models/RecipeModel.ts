@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
 const recipeSchema = new Schema({
   id: String,
@@ -55,4 +55,4 @@ const recipeSchema = new Schema({
   ],
 });
 
-export default mongoose.model('Recipe', recipeSchema);
+export default mongoose.model("Recipe", recipeSchema);
