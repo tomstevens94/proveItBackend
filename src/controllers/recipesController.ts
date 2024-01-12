@@ -8,7 +8,6 @@ import { createRecipeSearchAggregatePiplineStages } from "../utils/search/recipe
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
     const searchParams = req.body;
-    console.log(searchParams);
 
     const searchAggregatePipelineStages =
       createRecipeSearchAggregatePiplineStages(searchParams);
