@@ -1,7 +1,7 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
 const recipeSchema = new Schema({
-  id: String,
+  _id: String,
   title: String,
   createdByUserId: String,
   communityRating: Number,
@@ -55,4 +55,4 @@ const recipeSchema = new Schema({
   ],
 });
 
-export default mongoose.model('Recipe', recipeSchema);
+export default mongoose.model("Recipe", recipeSchema);

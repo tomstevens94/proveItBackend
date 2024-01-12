@@ -1,24 +1,33 @@
 import { RequestHandler } from "express";
 import RecipeModel from "../models/RecipeModel";
-import allRecipesJson from "../../localData/allRecipes.json";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import UserModel from "../models/UserModel";
 import { uploadImage } from "../utils/uploadImage";
+import { createRecipeSearchAggregatePiplineStages } from "../utils/search/recipeSearch";
 
-const localDataMode = false;
+export const searchRecipes: RequestHandler = async (req, res) => {
+  try {
+    const searchParams = req.body;
+    console.log(searchParams);
 
-export const getAllRecipes: RequestHandler = async (_, res) => {
-  let allRecipes;
+    const searchAggregatePipelineStages =
+      createRecipeSearchAggregatePiplineStages(searchParams);
 
-  if (localDataMode) {
-    allRecipes = allRecipesJson;
-  } else {
-    allRecipes = await RecipeModel.find({});
-  }
+    let queriedRecipes = [];
 
-  if (allRecipes.length > 0) {
-    return res.status(HTTPStatusCodes.OK).json(allRecipes);
-  } else {
+    if (searchAggregatePipelineStages.length > 0) {
+      // Aggregate is used to chain search params
+      queriedRecipes = await RecipeModel.aggregate(
+        searchAggregatePipelineStages
+      );
+    } else {
+      // This will trigger if no search params are received
+      queriedRecipes = await RecipeModel.find({});
+    }
+
+    return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
+  } catch (err) {
+    console.log(err);
     return res
       .status(HTTPStatusCodes.NotFound)
       .json("We were unable to find any recipes");
@@ -43,11 +52,7 @@ export const getRecipeById: RequestHandler = async (req, res) => {
   if (recipeIdArray.length === 1) {
     let recipe;
 
-    if (localDataMode) {
-      recipe = allRecipesJson.find(({ _id }) => _id === recipeId);
-    } else {
-      recipe = await RecipeModel.findOne({ _id: recipeId }).exec();
-    }
+    recipe = await RecipeModel.findOne({ _id: recipeId }).exec();
 
     if (recipe) {
       return res.status(HTTPStatusCodes.OK).json(recipe);
@@ -59,10 +64,7 @@ export const getRecipeById: RequestHandler = async (req, res) => {
   } else {
     let recipes;
 
-    if (localDataMode) {
-    } else {
-      recipes = await RecipeModel.find({ _id: { $in: recipeIdArray } }).exec();
-    }
+    recipes = await RecipeModel.find({ _id: { $in: recipeIdArray } }).exec();
 
     if (recipes) {
       return res.status(200).json(recipes);
