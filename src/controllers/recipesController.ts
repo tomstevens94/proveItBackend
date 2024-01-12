@@ -3,20 +3,29 @@ import RecipeModel from "../models/RecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import UserModel from "../models/UserModel";
 import { uploadImage } from "../utils/uploadImage";
-import { createQueryFromRecipeSearchParams } from "../utils/search/recipeSearch";
+import { createRecipeSearchAggregatePiplineStages } from "../utils/search/recipeSearch";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
     const searchParams = req.body;
     console.log(searchParams);
 
-    const searchQuery = createQueryFromRecipeSearchParams(searchParams);
+    const searchAggregatePipelineStages =
+      createRecipeSearchAggregatePiplineStages(searchParams);
 
-    const searchedRecipes = await RecipeModel.find(searchQuery);
+    let queriedRecipes = [];
 
-    console.log("Recipes found:", searchedRecipes.length);
+    if (searchAggregatePipelineStages.length > 0) {
+      // Aggregate is used to chain search params
+      queriedRecipes = await RecipeModel.aggregate(
+        searchAggregatePipelineStages
+      );
+    } else {
+      // This will trigger if no search params are received
+      queriedRecipes = await RecipeModel.find({});
+    }
 
-    return res.status(HTTPStatusCodes.OK).json(searchedRecipes);
+    return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
   } catch (err) {
     console.log(err);
     return res
