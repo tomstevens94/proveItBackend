@@ -22,7 +22,7 @@ export const postRecipeRating: RequestHandler = async (req, res) => {
   );
 
   try {
-    const existingUser = await UserModel.findOne({ uid: userId });
+    const existingUser = await UserModel.findOne({ userId });
 
     if (!existingUser)
       return res.sendStatus(HTTPStatusCodes.InternalServerError);

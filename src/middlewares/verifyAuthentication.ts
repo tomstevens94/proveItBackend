@@ -15,25 +15,25 @@ export const verifyAuthentication: RequestHandler = async (req, res, next) => {
 
   try {
     const userRecord = await verifyAuthenticatedIdToken(idToken);
-    const { uid } = userRecord;
+    const { uid: userId } = userRecord;
 
-    const existingUser = await UserModel.exists({ uid });
+    const existingUser = await UserModel.exists({ userId });
 
     if (existingUser) {
       console.log("Verified existing user");
     } else {
       console.log("New user, attempting to create in db");
       await UserModel.create({
-        uid,
+        userId,
         completedRecipes: [],
         ratedRecipes: [],
         photoUrl: userRecord.photoURL,
         displayName: userRecord.displayName,
       });
-      console.log("New user created with ID:", uid);
+      console.log("New user created with ID:", userId);
     }
 
-    req.headers["user-id"] = uid;
+    req.headers["user-id"] = userId;
 
     return next();
   } catch (err: any) {

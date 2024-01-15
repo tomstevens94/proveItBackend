@@ -1,12 +1,12 @@
-import { UserRecord, getAuth } from 'firebase-admin/auth';
+import { UserRecord, getAuth } from "firebase-admin/auth";
 
 export const verifyAuthenticatedIdToken = async (
-  idToken: string,
+  idToken: string
 ): Promise<UserRecord> => {
   try {
-    const { uid } = await getAuth().verifyIdToken(idToken);
+    const { userId } = await getAuth().verifyIdToken(idToken);
 
-    return await getAuth().getUser(uid);
+    return await getAuth().getUser(userId);
   } catch (err) {
     throw err;
   }

@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
 const ratedRecipeSchema = new Schema({
   recipeId: { type: Schema.Types.ObjectId, required: true },
@@ -6,11 +6,11 @@ const ratedRecipeSchema = new Schema({
 });
 
 const userSchema = new Schema({
-  uid: { type: String, required: true },
+  userId: { type: String, required: true },
   completedRecipes: { type: [Schema.Types.ObjectId], required: true },
   ratedRecipes: { type: [ratedRecipeSchema], required: true },
   photoUrl: { type: String },
   displayName: { type: String },
 });
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model("User", userSchema);
