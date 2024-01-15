@@ -4,9 +4,9 @@ export const verifyAuthenticatedIdToken = async (
   idToken: string
 ): Promise<UserRecord> => {
   try {
-    const { userId } = await getAuth().verifyIdToken(idToken);
+    const { uid } = await getAuth().verifyIdToken(idToken);
 
-    return await getAuth().getUser(userId);
+    return await getAuth().getUser(uid);
   } catch (err) {
     throw err;
   }
