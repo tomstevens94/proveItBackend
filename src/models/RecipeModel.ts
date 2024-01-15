@@ -4,7 +4,6 @@ const recipeSchema = new Schema({
   _id: String,
   title: String,
   createdByUserId: String,
-  communityRating: Number,
   difficulty: String,
   imageUrl: String,
   categories: [String],
