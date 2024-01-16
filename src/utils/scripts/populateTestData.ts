@@ -1,5 +1,6 @@
 import RatedRecipeModel from "../../models/RatedRecipeModel";
 import mongoose from "mongoose";
+// import RecipeModel from "../../models/RecipeModel";
 // import SavedRecipeModel from "../../models/SavedRecipeModel";
 
 export const populateTestData = () => {

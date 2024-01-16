@@ -86,3 +86,24 @@ export const createRecipeCommunityRatingPipelineStages =
     // Remove docs
     { $unset: "recipeRatingsTemp" },
   ];
+
+export const createPopulateCreateDetailsPipelineStages =
+  (): PipelineStage[] => [
+    // Join with user docs
+    {
+      $lookup: {
+        from: "users",
+        localField: "createdByUserId",
+        foreignField: "userId",
+        as: "creatorDetails",
+      },
+    },
+    // Set creatorDetails to first (only) elements in docs array
+    {
+      $set: {
+        creatorDetails: {
+          $first: "$creatorDetails",
+        },
+      },
+    },
+  ];
