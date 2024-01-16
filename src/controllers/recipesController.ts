@@ -12,17 +12,9 @@ export const searchRecipes: RequestHandler = async (req, res) => {
     const searchAggregatePipelineStages =
       createRecipeSearchAggregatePiplineStages(searchParams);
 
-    let queriedRecipes = [];
-
-    if (searchAggregatePipelineStages.length > 0) {
-      // Aggregate is used to chain search params
-      queriedRecipes = await RecipeModel.aggregate(
-        searchAggregatePipelineStages
-      );
-    } else {
-      // This will trigger if no search params are received
-      queriedRecipes = await RecipeModel.find({});
-    }
+    const queriedRecipes = await RecipeModel.aggregate(
+      searchAggregatePipelineStages
+    );
 
     return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
   } catch (err) {
@@ -92,7 +84,7 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
 
   try {
     const updatedUser = await UserModel.updateOne(
-      { uid: userId },
+      { userId },
       { $push: { completedRecipes: recipeId } }
     );
 

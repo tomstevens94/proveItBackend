@@ -43,7 +43,7 @@ export const createDifficultyPipelineStage = (
 });
 
 export const createRecipeSaveCountPipelineStages = (): PipelineStage[] => [
-  // Join with relevant docs in savedrecipes
+  // Join with relevant docs from savedrecipes
   {
     $lookup: {
       from: "savedrecipes",
@@ -61,5 +61,28 @@ export const createRecipeSaveCountPipelineStages = (): PipelineStage[] => [
     },
   },
   // Remove docs
-  { $unset: "saveData" },
+  { $unset: "recipeSavesTemp" },
 ];
+
+export const createRecipeCommunityRatingPipelineStages =
+  (): PipelineStage[] => [
+    // Join with relevant docs from ratedrecipes
+    {
+      $lookup: {
+        from: "ratedrecipes",
+        localField: "_id",
+        foreignField: "recipeId",
+        as: "recipeRatingsTemp",
+      },
+    },
+    // Average docs and save as communityRating
+    {
+      $addFields: {
+        communityRating: {
+          $avg: "$recipeRatingsTemp.rating",
+        },
+      },
+    },
+    // Remove docs
+    { $unset: "recipeRatingsTemp" },
+  ];
