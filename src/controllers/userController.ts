@@ -2,20 +2,26 @@ import { RequestHandler } from "express";
 import UserModel from "../models/UserModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import { getAuth } from "firebase-admin/auth";
+import RecipeModel from "../models/RecipeModel";
+import RatedRecipeModel from "../models/RatedRecipeModel";
+import SavedRecipeModel from "../models/SavedRecipeModel";
 
 export const deleteUserData: RequestHandler = async (req, res) => {
-  const uid = req.headers["user-id"] as string;
+  const userId = req.headers["user-id"] as string;
 
-  if (!uid) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+  if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
 
   try {
-    const deletedUserData = await UserModel.deleteOne({ uid });
+    const deletedRecipes = await RecipeModel.deleteMany({ userId });
+    const deletedRatedRecipes = await RatedRecipeModel.deleteMany({ userId });
+    const deletedSavedRecipes = await SavedRecipeModel.deleteMany({ userId });
+    const deletedUserData = await UserModel.deleteOne({ userId });
 
     if (deletedUserData.deletedCount === 1) {
       console.log("User deleted successfully");
     } else return res.sendStatus(HTTPStatusCodes.InternalServerError);
 
-    await getAuth().deleteUser(uid);
+    await getAuth().deleteUser(userId);
 
     return res.sendStatus(HTTPStatusCodes.OK);
   } catch (err: any) {
@@ -25,15 +31,15 @@ export const deleteUserData: RequestHandler = async (req, res) => {
 };
 
 export const getUserData: RequestHandler = async (req, res) => {
-  const uid = req.headers["user-id"];
+  const userId = req.headers["user-id"];
 
-  if (!uid) {
+  if (!userId) {
     console.log("No userId in request headers - check verification middleware");
     return res.sendStatus(HTTPStatusCodes.Unauthorized);
   }
 
   try {
-    const storedUserData = await UserModel.findOne({ uid });
+    const storedUserData = await UserModel.findOne({ userId });
 
     if (!storedUserData)
       return res.sendStatus(HTTPStatusCodes.InternalServerError);
@@ -51,15 +57,15 @@ export const getUserData: RequestHandler = async (req, res) => {
 export const updateUserData: RequestHandler = async (req, res) => {
   const data = req.body;
 
-  const uid = req.headers["user-id"];
+  const userId = req.headers["user-id"];
 
-  if (!uid) {
-    console.log("No uid in request headers - check verification middleware");
+  if (!userId) {
+    console.log("No userId in request headers - check verification middleware");
     return res.sendStatus(HTTPStatusCodes.Unauthorized);
   }
 
   try {
-    const result = await UserModel.updateOne({ uid }, data);
+    const result = await UserModel.updateOne({ userId }, data);
 
     if (result.modifiedCount === 0)
       return res.sendStatus(HTTPStatusCodes.NotFound);
