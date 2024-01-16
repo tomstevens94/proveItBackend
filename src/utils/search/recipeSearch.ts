@@ -8,6 +8,7 @@ import {
   createMaxDurationPipelineStage,
   createRecipeSaveCountPipelineStages,
   createRecipeCommunityRatingPipelineStages,
+  createPopulateCreateDetailsPipelineStages,
 } from "./createPipelineStages";
 
 export interface RecipeSearchParams {
@@ -77,6 +78,9 @@ export const createRecipeSearchAggregatePiplineStages = (
 
   // Get recipe community rating
   searchAggregatePipeline.push(...createRecipeCommunityRatingPipelineStages());
+
+  // Get recipe creator details
+  searchAggregatePipeline.push(...createPopulateCreateDetailsPipelineStages());
 
   return searchAggregatePipeline;
 };
