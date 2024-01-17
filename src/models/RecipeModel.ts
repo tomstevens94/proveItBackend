@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 const recipeSchema = new Schema({
-  _id: String,
   title: String,
   createdByUserId: String,
   difficulty: String,

@@ -2,7 +2,6 @@ import { RequestHandler } from "express";
 import RecipeModel from "../models/RecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import UserModel from "../models/UserModel";
-import { uploadImage } from "../utils/uploadImage";
 import { createRecipeSearchAggregatePiplineStages } from "../utils/search/recipeSearch";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
@@ -102,26 +101,20 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
   }
 };
 
-// export const postNewRecipe: RequestHandler = async (req, res) => {
-//   const { file } = req;
-//   let recipe = req.body;
+export const postNewRecipe: RequestHandler = async (req, res) => {
+  try {
+    let recipe = req.body;
+    if (!recipe) return res.sendStatus(HTTPStatusCodes.BadRequest);
 
-//   Object.keys(recipe).map(key => {
-//     recipe[key] = JSON.parse(recipe[key]);
-//   });
+    const userId = req.headers["user-id"];
 
-//   try {
-//     if (!file) throw 'No file found';
+    recipe.createdByUserId = userId;
 
-//     const imageUploadResult = await uploadImage(file);
-//     const imageUrl = imageUploadResult.data.url;
+    await RecipeModel.create(recipe);
 
-//     const createdRecipe = await RecipeModel.create({ ...recipe, imageUrl });
-//     console.log('Recipe created:', createdRecipe);
-
-//     return res.sendStatus(HTTPStatusCodes.OK);
-//   } catch (err: any) {
-//     console.log('Error in controller:', err.data);
-//     return res.sendStatus(HTTPStatusCodes.BadRequest);
-//   }
-// };
+    return res.sendStatus(HTTPStatusCodes.OK);
+  } catch (err: any) {
+    console.log("Error in controller:", err);
+    return res.sendStatus(HTTPStatusCodes.BadRequest);
+  }
+};
