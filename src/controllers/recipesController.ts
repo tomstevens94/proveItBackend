@@ -3,6 +3,8 @@ import RecipeModel from "../models/RecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import UserModel from "../models/UserModel";
 import { createRecipeSearchAggregatePiplineStages } from "../utils/search/recipeSearch";
+import SavedRecipeModel from "../models/SavedRecipeModel";
+import mongoose from "mongoose";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
@@ -116,5 +118,37 @@ export const postNewRecipe: RequestHandler = async (req, res) => {
   } catch (err: any) {
     console.log("Error in controller:", err);
     return res.sendStatus(HTTPStatusCodes.BadRequest);
+  }
+};
+
+export const toggleSaveRecipe: RequestHandler = async (req, res) => {
+  try {
+    const { recipeId } = req.body;
+    if (!recipeId) return res.sendStatus(HTTPStatusCodes.BadRequest);
+
+    const userId = req.headers["user-id"];
+
+    const savedRecipeObject = {
+      userId,
+      recipeId: new mongoose.Types.ObjectId(recipeId),
+    };
+
+    const recipeAreadySavedByUser = await SavedRecipeModel.exists(
+      savedRecipeObject
+    );
+
+    if (recipeAreadySavedByUser) {
+      // Unsave recipe
+      await SavedRecipeModel.deleteMany(savedRecipeObject);
+
+      return res.sendStatus(HTTPStatusCodes.OK);
+    } else {
+      // Save recipe
+      await SavedRecipeModel.create(savedRecipeObject);
+
+      return res.sendStatus(HTTPStatusCodes.Created);
+    }
+  } catch (err) {
+    console.log("Error saving recipe:", err);
   }
 };
