@@ -42,6 +42,11 @@ export const getRecipeById: RequestHandler = async (req, res) => {
   }
 
   if (recipeIdArray.length === 1) {
+    if (!mongoose.Types.ObjectId.isValid(recipeId)) {
+      console.log("Invalid recipeId");
+      return res.sendStatus(HTTPStatusCodes.BadRequest);
+    }
+
     let recipe;
 
     recipe = await RecipeModel.findOne({ _id: recipeId }).exec();
@@ -54,6 +59,11 @@ export const getRecipeById: RequestHandler = async (req, res) => {
         .json("We weren't able to find that recipe");
     }
   } else {
+    if (recipeIdArray.some((e) => !mongoose.Types.ObjectId.isValid(e))) {
+      console.log("Invalid recipeId within array");
+      return res.sendStatus(HTTPStatusCodes.BadRequest);
+    }
+
     let recipes;
 
     recipes = await RecipeModel.find({ _id: { $in: recipeIdArray } }).exec();
@@ -63,6 +73,20 @@ export const getRecipeById: RequestHandler = async (req, res) => {
     } else {
       // TODO error handling
     }
+  }
+};
+
+export const getSavedRecipes: RequestHandler = async (req, res) => {
+  try {
+    const userId = req.headers["user-id"];
+    if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+
+    const savedRecipes = await SavedRecipeModel.find({ userId });
+
+    return res.status(HTTPStatusCodes.OK).json(savedRecipes);
+  } catch (err) {
+    console.log("Error getting saved recipes", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };
 
@@ -150,5 +174,6 @@ export const toggleSaveRecipe: RequestHandler = async (req, res) => {
     }
   } catch (err) {
     console.log("Error saving recipe:", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };
