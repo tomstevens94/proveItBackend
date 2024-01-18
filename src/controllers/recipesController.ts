@@ -2,7 +2,11 @@ import { RequestHandler } from "express";
 import RecipeModel from "../models/RecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import UserModel from "../models/UserModel";
-import { createRecipeSearchAggregatePiplineStages } from "../utils/search/recipeSearch";
+import {
+  createAdditionalRecipeFieldsAggregatePiplineStages,
+  createRecipeSearchAggregatePiplineStages,
+  createQueryBy_IdArrayPipelineStage,
+} from "../utils/search/recipeSearch";
 import SavedRecipeModel from "../models/SavedRecipeModel";
 import mongoose from "mongoose";
 
@@ -12,10 +16,13 @@ export const searchRecipes: RequestHandler = async (req, res) => {
 
     const searchAggregatePipelineStages =
       createRecipeSearchAggregatePiplineStages(searchParams);
+    const additionalFieldsPipelineStages =
+      createAdditionalRecipeFieldsAggregatePiplineStages();
 
-    const queriedRecipes = await RecipeModel.aggregate(
-      searchAggregatePipelineStages
-    );
+    const queriedRecipes = await RecipeModel.aggregate([
+      ...searchAggregatePipelineStages,
+      ...additionalFieldsPipelineStages,
+    ]);
 
     return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
   } catch (err) {
@@ -41,37 +48,38 @@ export const getRecipeById: RequestHandler = async (req, res) => {
     return res.sendStatus(HTTPStatusCodes.BadRequest);
   }
 
-  if (recipeIdArray.length === 1) {
-    if (!mongoose.Types.ObjectId.isValid(recipeId)) {
-      console.log("Invalid recipeId");
-      return res.sendStatus(HTTPStatusCodes.BadRequest);
-    }
+  if (recipeIdArray.some((e) => !mongoose.Types.ObjectId.isValid(e))) {
+    console.log("Invalid recipeId within array");
+    return res.sendStatus(HTTPStatusCodes.BadRequest);
+  }
 
-    let recipe;
+  const recipeIdObjectIds = recipeIdArray.map(
+    (e) => new mongoose.Types.ObjectId(e)
+  );
 
-    recipe = await RecipeModel.findOne({ _id: recipeId }).exec();
+  const matchedRecipes = await RecipeModel.aggregate([
+    createQueryBy_IdArrayPipelineStage(recipeIdObjectIds),
+    ...createAdditionalRecipeFieldsAggregatePiplineStages(),
+  ]);
 
-    if (recipe) {
-      return res.status(HTTPStatusCodes.OK).json(recipe);
+  if (recipeIdObjectIds.length === 1) {
+    // Single recipe requested
+    if (matchedRecipes.length === 1) {
+      return res.status(HTTPStatusCodes.OK).json(matchedRecipes[0]);
     } else {
-      return res
-        .status(HTTPStatusCodes.NotFound)
-        .json("We weren't able to find that recipe");
+      const errorMsg = `${matchedRecipes.length},
+      "recipes found after requesting single recipe"`;
+      console.log(errorMsg);
+
+      return res.status(HTTPStatusCodes.NotFound).json(errorMsg);
     }
   } else {
-    if (recipeIdArray.some((e) => !mongoose.Types.ObjectId.isValid(e))) {
-      console.log("Invalid recipeId within array");
-      return res.sendStatus(HTTPStatusCodes.BadRequest);
-    }
-
-    let recipes;
-
-    recipes = await RecipeModel.find({ _id: { $in: recipeIdArray } }).exec();
-
-    if (recipes) {
-      return res.status(200).json(recipes);
+    // Multiple recipes requested
+    if (matchedRecipes.length > 0) {
+      return res.status(HTTPStatusCodes.OK).json(matchedRecipes);
     } else {
-      // TODO error handling
+      console.log("No recipes found after requesting multiple recipes");
+      return res.status(HTTPStatusCodes.NotFound);
     }
   }
 };
