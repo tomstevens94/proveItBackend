@@ -10,6 +10,7 @@ import SavedRecipeModel from "../models/SavedRecipeModel";
 import mongoose from "mongoose";
 import CompletedRecipeModel from "../models/CompletedRecipeModel";
 import { createCountCompletedRecipesPipelineStages } from "../utils/search/createPipelineStages";
+import RatedRecipeModel from "../models/RatedRecipeModel";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
@@ -117,6 +118,20 @@ export const getCompletedRecipes: RequestHandler = async (req, res) => {
   }
 };
 
+export const getRatedRecipes: RequestHandler = async (req, res) => {
+  try {
+    const userId = req.headers["user-id"];
+    if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+
+    const ratedRecipes = await RatedRecipeModel.find({ userId });
+
+    return res.status(HTTPStatusCodes.OK).json(ratedRecipes);
+  } catch (err: any) {
+    console.log("Error getting rated recipes:", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
+  }
+};
+
 export const postRecipeIsComplete: RequestHandler = async (req, res) => {
   if (!req.body || !req.body?.recipeId) {
     console.log("Missing request body or recipeId");
@@ -194,6 +209,34 @@ export const toggleSaveRecipe: RequestHandler = async (req, res) => {
     }
   } catch (err) {
     console.log("Error saving recipe:", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
+  }
+};
+
+export const postRecipeRating: RequestHandler = async (req, res) => {
+  if (!req.body || !req.body.rating || !req.body.recipeId)
+    return res.sendStatus(HTTPStatusCodes.BadRequest);
+
+  const { rating, recipeId } = req.body;
+
+  const userId = req.headers["user-id"];
+  if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+
+  try {
+    // Update existing rating doc if one exists
+    await RatedRecipeModel.findOneAndUpdate(
+      {
+        recipeId: new mongoose.Types.ObjectId(recipeId),
+        userId,
+      },
+      { rating },
+      // Below is required to create new doc if it doesnt already exist
+      { upsert: true }
+    );
+
+    return res.sendStatus(HTTPStatusCodes.Created);
+  } catch (err: any) {
+    console.log("Error in ratingsController:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };
