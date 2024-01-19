@@ -3,7 +3,6 @@ import "dotenv/config";
 import { setupDatabaseConnection } from "./utils/setupDatabaseConnection";
 import { logger } from "./middlewares/logger";
 import { verifyAuthentication } from "./middlewares/verifyAuthentication";
-import ratingsRouter from "./routes/ratingsRouter";
 import recipesRouter from "./routes/recipesRouter";
 import userRouter from "./routes/userRouter";
 import { firebaseAppConfig } from "./configs/firebase";
@@ -28,7 +27,6 @@ app.use(verifyAuthentication);
 isDevelopment && app.use(artificialDelay);
 
 // Routing
-app.use("/api/ratings", ratingsRouter);
 app.use("/api/recipes", recipesRouter);
 app.use("/api/user", userRouter);
 
