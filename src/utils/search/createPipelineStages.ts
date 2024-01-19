@@ -107,3 +107,24 @@ export const createPopulateCreateDetailsPipelineStages =
       },
     },
   ];
+
+export const createCountCompletedRecipesPipelineStages = (
+  userId: string
+): PipelineStage[] => [
+  {
+    $match: {
+      userId,
+    },
+  },
+  {
+    $group: {
+      _id: "$recipeId",
+      count: { $count: {} },
+    },
+  },
+  {
+    $set: {
+      recipeId: "$_id",
+    },
+  },
+];

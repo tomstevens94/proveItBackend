@@ -1,4 +1,4 @@
-import { PipelineStage } from "mongoose";
+import mongoose, { PipelineStage } from "mongoose";
 import {
   createDifficultyPipelineStage,
   createMinIngredientsPipelineStage,
@@ -73,14 +73,27 @@ export const createRecipeSearchAggregatePiplineStages = (
     );
   }
 
-  // Get recipe save count
-  searchAggregatePipeline.push(...createRecipeSaveCountPipelineStages());
-
-  // Get recipe community rating
-  searchAggregatePipeline.push(...createRecipeCommunityRatingPipelineStages());
-
-  // Get recipe creator details
-  searchAggregatePipeline.push(...createPopulateCreateDetailsPipelineStages());
-
   return searchAggregatePipeline;
 };
+
+export const createAdditionalRecipeFieldsAggregatePiplineStages =
+  (): PipelineStage[] => {
+    let aggregatePipeline: PipelineStage[] = [];
+
+    // Get recipe save count
+    aggregatePipeline.push(...createRecipeSaveCountPipelineStages());
+
+    // Get recipe community rating
+    aggregatePipeline.push(...createRecipeCommunityRatingPipelineStages());
+
+    // Get recipe creator details
+    aggregatePipeline.push(...createPopulateCreateDetailsPipelineStages());
+
+    return aggregatePipeline;
+  };
+
+export const createQueryBy_IdArrayPipelineStage = (
+  _idArray: mongoose.Types.ObjectId[]
+) => ({
+  $match: { $expr: { $in: ["$_id", _idArray] } },
+});

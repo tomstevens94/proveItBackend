@@ -1,8 +1,15 @@
 import { RequestHandler } from "express";
 import RecipeModel from "../models/RecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
-import UserModel from "../models/UserModel";
-import { createRecipeSearchAggregatePiplineStages } from "../utils/search/recipeSearch";
+import {
+  createAdditionalRecipeFieldsAggregatePiplineStages,
+  createRecipeSearchAggregatePiplineStages,
+  createQueryBy_IdArrayPipelineStage,
+} from "../utils/search/recipeSearch";
+import SavedRecipeModel from "../models/SavedRecipeModel";
+import mongoose from "mongoose";
+import CompletedRecipeModel from "../models/CompletedRecipeModel";
+import { createCountCompletedRecipesPipelineStages } from "../utils/search/createPipelineStages";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
@@ -10,10 +17,13 @@ export const searchRecipes: RequestHandler = async (req, res) => {
 
     const searchAggregatePipelineStages =
       createRecipeSearchAggregatePiplineStages(searchParams);
+    const additionalFieldsPipelineStages =
+      createAdditionalRecipeFieldsAggregatePiplineStages();
 
-    const queriedRecipes = await RecipeModel.aggregate(
-      searchAggregatePipelineStages
-    );
+    const queriedRecipes = await RecipeModel.aggregate([
+      ...searchAggregatePipelineStages,
+      ...additionalFieldsPipelineStages,
+    ]);
 
     return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
   } catch (err) {
@@ -39,28 +49,71 @@ export const getRecipeById: RequestHandler = async (req, res) => {
     return res.sendStatus(HTTPStatusCodes.BadRequest);
   }
 
-  if (recipeIdArray.length === 1) {
-    let recipe;
+  if (recipeIdArray.some((e) => !mongoose.Types.ObjectId.isValid(e))) {
+    console.log("Invalid recipeId within array");
+    return res.sendStatus(HTTPStatusCodes.BadRequest);
+  }
 
-    recipe = await RecipeModel.findOne({ _id: recipeId }).exec();
+  const recipeIdObjectIds = recipeIdArray.map(
+    (e) => new mongoose.Types.ObjectId(e)
+  );
 
-    if (recipe) {
-      return res.status(HTTPStatusCodes.OK).json(recipe);
+  const matchedRecipes = await RecipeModel.aggregate([
+    createQueryBy_IdArrayPipelineStage(recipeIdObjectIds),
+    ...createAdditionalRecipeFieldsAggregatePiplineStages(),
+  ]);
+
+  if (recipeIdObjectIds.length === 1) {
+    // Single recipe requested
+    if (matchedRecipes.length === 1) {
+      return res.status(HTTPStatusCodes.OK).json(matchedRecipes[0]);
     } else {
-      return res
-        .status(HTTPStatusCodes.NotFound)
-        .json("We weren't able to find that recipe");
+      const errorMsg = `${matchedRecipes.length},
+      "recipes found after requesting single recipe"`;
+      console.log(errorMsg);
+
+      return res.status(HTTPStatusCodes.NotFound).json(errorMsg);
     }
   } else {
-    let recipes;
-
-    recipes = await RecipeModel.find({ _id: { $in: recipeIdArray } }).exec();
-
-    if (recipes) {
-      return res.status(200).json(recipes);
+    // Multiple recipes requested
+    if (matchedRecipes.length > 0) {
+      return res.status(HTTPStatusCodes.OK).json(matchedRecipes);
     } else {
-      // TODO error handling
+      console.log("No recipes found after requesting multiple recipes");
+      return res.status(HTTPStatusCodes.NotFound);
     }
+  }
+};
+
+export const getSavedRecipes: RequestHandler = async (req, res) => {
+  try {
+    const userId = req.headers["user-id"];
+    if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+
+    const savedRecipes = await SavedRecipeModel.find({ userId });
+
+    return res.status(HTTPStatusCodes.OK).json(savedRecipes);
+  } catch (err) {
+    console.log("Error getting saved recipes", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
+  }
+};
+
+export const getCompletedRecipes: RequestHandler = async (req, res) => {
+  try {
+    const userId = req.headers["user-id"];
+    if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+
+    console.log("Getting completed recipes", userId);
+
+    const completedRecipes = await CompletedRecipeModel.aggregate(
+      createCountCompletedRecipesPipelineStages(userId as string)
+    );
+
+    return res.status(HTTPStatusCodes.OK).json(completedRecipes);
+  } catch (err) {
+    console.log("Error getting completed recipes", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };
 
@@ -71,7 +124,6 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
   }
 
   const userId = req.headers["user-id"];
-
   if (!userId) {
     console.log("Missing userId");
     return res.sendStatus(HTTPStatusCodes.Unauthorized);
@@ -82,18 +134,12 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
   console.log("User:", userId, "completed recipe:", recipeId);
 
   try {
-    const updatedUser = await UserModel.updateOne(
-      { userId },
-      { $push: { completedRecipes: recipeId } }
-    );
+    await CompletedRecipeModel.create({
+      userId,
+      recipeId: new mongoose.Types.ObjectId(recipeId),
+    });
 
-    if (updatedUser.modifiedCount > 0) {
-      console.log("Updated user in database");
-      return res.sendStatus(HTTPStatusCodes.OK);
-    } else {
-      console.log("Failed to update user in database");
-      return res.sendStatus(HTTPStatusCodes.NotFound);
-    }
+    return res.sendStatus(HTTPStatusCodes.Created);
   } catch (err: any) {
     console.log(err);
 
@@ -116,5 +162,38 @@ export const postNewRecipe: RequestHandler = async (req, res) => {
   } catch (err: any) {
     console.log("Error in controller:", err);
     return res.sendStatus(HTTPStatusCodes.BadRequest);
+  }
+};
+
+export const toggleSaveRecipe: RequestHandler = async (req, res) => {
+  try {
+    const { recipeId } = req.body;
+    if (!recipeId) return res.sendStatus(HTTPStatusCodes.BadRequest);
+
+    const userId = req.headers["user-id"];
+
+    const savedRecipeObject = {
+      userId,
+      recipeId: new mongoose.Types.ObjectId(recipeId),
+    };
+
+    const recipeAreadySavedByUser = await SavedRecipeModel.exists(
+      savedRecipeObject
+    );
+
+    if (recipeAreadySavedByUser) {
+      // Unsave recipe
+      await SavedRecipeModel.deleteMany(savedRecipeObject);
+
+      return res.sendStatus(HTTPStatusCodes.OK);
+    } else {
+      // Save recipe
+      await SavedRecipeModel.create(savedRecipeObject);
+
+      return res.sendStatus(HTTPStatusCodes.Created);
+    }
+  } catch (err) {
+    console.log("Error saving recipe:", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };
