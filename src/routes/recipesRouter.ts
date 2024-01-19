@@ -3,6 +3,7 @@ import {
   searchRecipes,
   getRecipeById,
   getSavedRecipes,
+  getCompletedRecipes,
   postRecipeIsComplete,
   postNewRecipe,
   toggleSaveRecipe,
@@ -11,6 +12,7 @@ import {
 const router = express.Router();
 
 router.get("/saved", getSavedRecipes);
+router.get("/completed", getCompletedRecipes);
 router.get("/:recipeId", getRecipeById);
 // Routes with dynamic URLs must come after ALL other routes of the same method
 

@@ -1,7 +1,6 @@
 import { RequestHandler } from "express";
 import RecipeModel from "../models/RecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
-import UserModel from "../models/UserModel";
 import {
   createAdditionalRecipeFieldsAggregatePiplineStages,
   createRecipeSearchAggregatePiplineStages,
@@ -9,6 +8,8 @@ import {
 } from "../utils/search/recipeSearch";
 import SavedRecipeModel from "../models/SavedRecipeModel";
 import mongoose from "mongoose";
+import CompletedRecipeModel from "../models/CompletedRecipeModel";
+import { createCountCompletedRecipesPipelineStages } from "../utils/search/createPipelineStages";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
@@ -98,6 +99,24 @@ export const getSavedRecipes: RequestHandler = async (req, res) => {
   }
 };
 
+export const getCompletedRecipes: RequestHandler = async (req, res) => {
+  try {
+    const userId = req.headers["user-id"];
+    if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+
+    console.log("Getting completed recipes", userId);
+
+    const completedRecipes = await CompletedRecipeModel.aggregate(
+      createCountCompletedRecipesPipelineStages(userId as string)
+    );
+
+    return res.status(HTTPStatusCodes.OK).json(completedRecipes);
+  } catch (err) {
+    console.log("Error getting completed recipes", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
+  }
+};
+
 export const postRecipeIsComplete: RequestHandler = async (req, res) => {
   if (!req.body || !req.body?.recipeId) {
     console.log("Missing request body or recipeId");
@@ -105,7 +124,6 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
   }
 
   const userId = req.headers["user-id"];
-
   if (!userId) {
     console.log("Missing userId");
     return res.sendStatus(HTTPStatusCodes.Unauthorized);
@@ -116,18 +134,12 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
   console.log("User:", userId, "completed recipe:", recipeId);
 
   try {
-    const updatedUser = await UserModel.updateOne(
-      { userId },
-      { $push: { completedRecipes: recipeId } }
-    );
+    await CompletedRecipeModel.create({
+      userId,
+      recipeId: new mongoose.Types.ObjectId(recipeId),
+    });
 
-    if (updatedUser.modifiedCount > 0) {
-      console.log("Updated user in database");
-      return res.sendStatus(HTTPStatusCodes.OK);
-    } else {
-      console.log("Failed to update user in database");
-      return res.sendStatus(HTTPStatusCodes.NotFound);
-    }
+    return res.sendStatus(HTTPStatusCodes.Created);
   } catch (err: any) {
     console.log(err);
 
