@@ -133,7 +133,7 @@ export const getRatedRecipes: RequestHandler = async (req, res) => {
 };
 
 export const postRecipeIsComplete: RequestHandler = async (req, res) => {
-  if (!req.body || !req.body?.recipeId) {
+  if (!req.body || !req.body.recipeId) {
     console.log("Missing request body or recipeId");
     return res.sendStatus(HTTPStatusCodes.BadRequest);
   }
