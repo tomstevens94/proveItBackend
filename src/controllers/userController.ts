@@ -8,7 +8,6 @@ import SavedRecipeModel from "../models/SavedRecipeModel";
 
 export const deleteUserData: RequestHandler = async (req, res) => {
   const userId = req.headers["user-id"] as string;
-
   if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
 
   try {
@@ -21,6 +20,11 @@ export const deleteUserData: RequestHandler = async (req, res) => {
       console.log("User deleted successfully");
     } else return res.sendStatus(HTTPStatusCodes.InternalServerError);
 
+    console.log(`Deleted ${deletedRecipes.deletedCount} recipes`);
+    console.log(`Deleted ${deletedRatedRecipes.deletedCount} recipe ratings`);
+    console.log(`Deleted ${deletedSavedRecipes.deletedCount} recipe saves`);
+
+    // Delete user data from firebase auth
     await getAuth().deleteUser(userId);
 
     return res.sendStatus(HTTPStatusCodes.OK);
