@@ -64,11 +64,11 @@ export const removeFields = async () => {
 };
 
 export const deleteRecipes = async () => {
-  const recipeIdToDelete: string[] = [];
+  const recipeIdsToDelete: string[] = [];
 
   try {
     const deletionResult = await RecipeModel.deleteMany({
-      _id: { $in: recipeIdToDelete },
+      _id: { $in: recipeIdsToDelete },
     });
 
     console.log(deletionResult);
