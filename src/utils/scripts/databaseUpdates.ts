@@ -62,3 +62,17 @@ export const removeFields = async () => {
     console.log("Error removing fields:", err);
   }
 };
+
+export const deleteRecipes = async () => {
+  const recipeIdToDelete: string[] = [];
+
+  try {
+    const deletionResult = await RecipeModel.deleteMany({
+      _id: { $in: recipeIdToDelete },
+    });
+
+    console.log(deletionResult);
+  } catch (err) {
+    console.log("Error deleting recipes:", err);
+  }
+};
