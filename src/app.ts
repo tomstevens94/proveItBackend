@@ -9,6 +9,7 @@ import { firebaseAppConfig } from "./configs/firebase";
 import { initializeApp } from "firebase-admin/app";
 import { logIpAddress } from "./utils/logLocalIpAddress";
 import { artificialDelay } from "./middlewares/artificialDelay";
+import { getAppInfo } from "./controllers/appInfoController";
 
 const { PORT, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === "development";
@@ -18,6 +19,8 @@ initializeApp(firebaseAppConfig);
 isDevelopment && logIpAddress();
 
 const app = express();
+
+app.get("/api/app-info", getAppInfo);
 
 // Middleware
 app.use(json());
