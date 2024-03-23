@@ -142,9 +142,9 @@ export const getDashboardRecipes: RequestHandler = async (req, res) => {
   try {
     const popularRecipes = RecipeModel.find({});
 
-    return {
+    return res.status(HTTPStatusCodes.OK).json({
       popularRecipes,
-    };
+    });
   } catch (err: any) {
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
