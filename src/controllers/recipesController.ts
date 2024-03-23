@@ -140,7 +140,7 @@ export const getDashboardRecipes: RequestHandler = async (req, res) => {
   }
 
   try {
-    const popularRecipes = RecipeModel.find({});
+    const popularRecipes = await RecipeModel.find({});
 
     return res.status(HTTPStatusCodes.OK).json({
       popularRecipes,
