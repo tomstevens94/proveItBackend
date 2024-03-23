@@ -132,6 +132,24 @@ export const getRatedRecipes: RequestHandler = async (req, res) => {
   }
 };
 
+export const getDashboardRecipes: RequestHandler = async (req, res) => {
+  const userId = req.headers["user-id"];
+  if (!userId) {
+    console.log("Missing userId");
+    return res.sendStatus(HTTPStatusCodes.Unauthorized);
+  }
+
+  try {
+    const popularRecipes = RecipeModel.find({});
+
+    return {
+      popularRecipes,
+    };
+  } catch (err: any) {
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
+  }
+};
+
 export const postRecipeIsComplete: RequestHandler = async (req, res) => {
   if (!req.body || !req.body.recipeId) {
     console.log("Missing request body or recipeId");
