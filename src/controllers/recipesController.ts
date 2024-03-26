@@ -133,7 +133,7 @@ export const getDashboardRecipes: RequestHandler = async (req, res) => {
   }
 
   try {
-    const popularRecipes = await queryRecipesBySearchParams();
+    const popularRecipes = await queryRecipesBySearchParams({});
 
     return res.status(HTTPStatusCodes.OK).json({
       popularRecipes,

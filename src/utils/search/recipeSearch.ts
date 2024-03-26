@@ -21,7 +21,9 @@ export interface RecipeSearchParams {
   maxDurationInHours?: number;
 }
 
-export const queryRecipesBySearchParams = async (searchParams?: any) => {
+export const queryRecipesBySearchParams = async (
+  searchParams: RecipeSearchParams
+) => {
   const searchAggregatePipelineStages =
     createRecipeSearchAggregatePiplineStages(searchParams);
   const additionalFieldsPipelineStages =
@@ -36,11 +38,9 @@ export const queryRecipesBySearchParams = async (searchParams?: any) => {
 };
 
 export const createRecipeSearchAggregatePiplineStages = (
-  recipeSearchParams?: RecipeSearchParams
+  recipeSearchParams: RecipeSearchParams
 ): PipelineStage[] => {
   let searchAggregatePipeline: PipelineStage[] = [];
-
-  if (!recipeSearchParams) return searchAggregatePipeline;
 
   // Apply text search
   if (recipeSearchParams.text && recipeSearchParams.text.length > 0) {
