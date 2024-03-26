@@ -36,9 +36,11 @@ export const queryRecipesBySearchParams = async (searchParams?: any) => {
 };
 
 export const createRecipeSearchAggregatePiplineStages = (
-  recipeSearchParams: RecipeSearchParams
+  recipeSearchParams?: RecipeSearchParams
 ): PipelineStage[] => {
   let searchAggregatePipeline: PipelineStage[] = [];
+
+  if (!recipeSearchParams) return searchAggregatePipeline;
 
   // Apply text search
   if (recipeSearchParams.text && recipeSearchParams.text.length > 0) {
