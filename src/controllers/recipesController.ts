@@ -17,7 +17,7 @@ export const searchRecipes: RequestHandler = async (req, res) => {
   try {
     const searchParams = req.body;
 
-    const queriedRecipes = queryRecipesBySearchParams(searchParams);
+    const queriedRecipes = await queryRecipesBySearchParams(searchParams);
 
     return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
   } catch (err) {
