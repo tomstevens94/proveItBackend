@@ -21,7 +21,7 @@ export interface RecipeSearchParams {
   maxDurationInHours?: number;
 }
 
-export const queryRecipesBySearchParams = async (searchParams: any) => {
+export const queryRecipesBySearchParams = async (searchParams?: any) => {
   const searchAggregatePipelineStages =
     createRecipeSearchAggregatePiplineStages(searchParams);
   const additionalFieldsPipelineStages =
