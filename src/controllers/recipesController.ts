@@ -5,6 +5,7 @@ import {
   createAdditionalRecipeFieldsAggregatePiplineStages,
   createRecipeSearchAggregatePiplineStages,
   createQueryBy_IdArrayPipelineStage,
+  queryRecipesBySearchParams,
 } from "../utils/search/recipeSearch";
 import SavedRecipeModel from "../models/SavedRecipeModel";
 import mongoose from "mongoose";
@@ -16,15 +17,7 @@ export const searchRecipes: RequestHandler = async (req, res) => {
   try {
     const searchParams = req.body;
 
-    const searchAggregatePipelineStages =
-      createRecipeSearchAggregatePiplineStages(searchParams);
-    const additionalFieldsPipelineStages =
-      createAdditionalRecipeFieldsAggregatePiplineStages();
-
-    const queriedRecipes = await RecipeModel.aggregate([
-      ...searchAggregatePipelineStages,
-      ...additionalFieldsPipelineStages,
-    ]);
+    const queriedRecipes = queryRecipesBySearchParams(searchParams);
 
     return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
   } catch (err) {

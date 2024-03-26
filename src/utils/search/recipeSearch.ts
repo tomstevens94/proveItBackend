@@ -10,6 +10,7 @@ import {
   createRecipeCommunityRatingPipelineStages,
   createPopulateCreateDetailsPipelineStages,
 } from "./createPipelineStages";
+import RecipeModel from "../../models/RecipeModel";
 
 export interface RecipeSearchParams {
   text?: string;
@@ -19,6 +20,20 @@ export interface RecipeSearchParams {
   minDurationInHours?: number;
   maxDurationInHours?: number;
 }
+
+export const queryRecipesBySearchParams = async (searchParams: any) => {
+  const searchAggregatePipelineStages =
+    createRecipeSearchAggregatePiplineStages(searchParams);
+  const additionalFieldsPipelineStages =
+    createAdditionalRecipeFieldsAggregatePiplineStages();
+
+  const queriedRecipes = await RecipeModel.aggregate([
+    ...searchAggregatePipelineStages,
+    ...additionalFieldsPipelineStages,
+  ]);
+
+  return queriedRecipes;
+};
 
 export const createRecipeSearchAggregatePiplineStages = (
   recipeSearchParams: RecipeSearchParams
