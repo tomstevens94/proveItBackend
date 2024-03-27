@@ -11,6 +11,7 @@ const userSchema = new Schema({
   ratedRecipes: { type: [ratedRecipeSchema], required: true },
   photoUrl: { type: String },
   displayName: { type: String },
+  hasCompletedOnboarding: { type: Boolean, required: true },
 });
 
 export default mongoose.model("User", userSchema);

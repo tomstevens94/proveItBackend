@@ -45,8 +45,7 @@ export const getUserData: RequestHandler = async (req, res) => {
   try {
     const storedUserData = await UserModel.findOne({ userId });
 
-    if (!storedUserData)
-      return res.sendStatus(HTTPStatusCodes.InternalServerError);
+    if (!storedUserData) return res.sendStatus(HTTPStatusCodes.NotFound);
 
     console.log("User data found in db");
 
