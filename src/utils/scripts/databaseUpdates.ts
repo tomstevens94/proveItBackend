@@ -76,3 +76,22 @@ export const deleteRecipes = async () => {
     console.log("Error deleting recipes:", err);
   }
 };
+
+export const updateOnboardingCompletion = async () => {
+  try {
+    const allUsers = await UserModel.find({});
+
+    const updatedUsers = await Promise.all(
+      allUsers.map((user) => {
+        // user.displayName = undefined;
+        // const hasCompletedOnboarding = !!user?.firstName && !!user?.lastName;
+        // user.hasCompletedOnboarding = hasCompletedOnboarding;
+        return user.save();
+      })
+    );
+
+    console.log("updatedUsers", updatedUsers);
+  } catch (err) {
+    console.log("Error updating users", err);
+  }
+};
