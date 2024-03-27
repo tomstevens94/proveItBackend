@@ -12,7 +12,6 @@ const userSchema = new Schema({
   photoUrl: { type: String },
   firstName: { type: String },
   lastName: { type: String },
-  hasCompletedOnboarding: { type: Boolean, required: true },
 });
 
 export default mongoose.model("User", userSchema);
