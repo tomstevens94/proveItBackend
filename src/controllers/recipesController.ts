@@ -11,6 +11,7 @@ import mongoose from "mongoose";
 import CompletedRecipeModel from "../models/CompletedRecipeModel";
 import { createCountCompletedRecipesPipelineStages } from "../utils/search/createPipelineStages";
 import RatedRecipeModel from "../models/RatedRecipeModel";
+import { ObjectId } from "mongodb";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
@@ -133,9 +134,13 @@ export const getDashboardRecipes: RequestHandler = async (req, res) => {
 
   try {
     const popularRecipes = await findRecipes({});
+    const recipeOfTheWeek = await findRecipes({
+      _id: new ObjectId("64d4ac735c127f006546f5e8"),
+    });
 
     return res.status(HTTPStatusCodes.OK).json({
       popularRecipes,
+      recipeOfTheWeek,
     });
   } catch (err: any) {
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
