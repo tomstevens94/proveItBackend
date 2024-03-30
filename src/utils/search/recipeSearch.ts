@@ -30,7 +30,7 @@ export const queryRecipesBySearchParams = async (
     createAdditionalRecipeFieldsAggregatePiplineStages();
 
   const queriedRecipes = await RecipeModel.aggregate([
-    { $match: { _id: "6499b754911584d5fc36e2de" } },
+    { $match: { title: "Classic White Sourdough" } },
     ...searchAggregatePipelineStages,
     ...additionalFieldsPipelineStages,
   ]);
