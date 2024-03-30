@@ -140,7 +140,7 @@ export const getDashboardRecipes: RequestHandler = async (req, res) => {
 
     return res.status(HTTPStatusCodes.OK).json({
       popularRecipes,
-      recipeOfTheWeek,
+      recipeOfTheWeek: recipeOfTheWeek[0],
     });
   } catch (err: any) {
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
