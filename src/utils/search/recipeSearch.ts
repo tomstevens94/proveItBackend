@@ -21,8 +21,9 @@ export interface RecipeSearchParams {
   maxDurationInHours?: number;
 }
 
-export const queryRecipesBySearchParams = async (
-  searchParams: RecipeSearchParams
+export const findRecipes = async (
+  filter: any,
+  searchParams: RecipeSearchParams = {}
 ) => {
   const searchAggregatePipelineStages =
     createRecipeSearchAggregatePiplineStages(searchParams);
@@ -30,7 +31,7 @@ export const queryRecipesBySearchParams = async (
     createAdditionalRecipeFieldsAggregatePiplineStages();
 
   const queriedRecipes = await RecipeModel.aggregate([
-    { $match: { title: "Classic White Sourdough" } },
+    { $match: filter },
     ...searchAggregatePipelineStages,
     ...additionalFieldsPipelineStages,
   ]);

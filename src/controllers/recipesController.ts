@@ -3,9 +3,8 @@ import RecipeModel from "../models/RecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import {
   createAdditionalRecipeFieldsAggregatePiplineStages,
-  createRecipeSearchAggregatePiplineStages,
   createQueryBy_IdArrayPipelineStage,
-  queryRecipesBySearchParams,
+  findRecipes,
 } from "../utils/search/recipeSearch";
 import SavedRecipeModel from "../models/SavedRecipeModel";
 import mongoose from "mongoose";
@@ -17,7 +16,7 @@ export const searchRecipes: RequestHandler = async (req, res) => {
   try {
     const searchParams = req.body;
 
-    const queriedRecipes = await queryRecipesBySearchParams(searchParams);
+    const queriedRecipes = await findRecipes({}, searchParams);
 
     return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
   } catch (err) {
@@ -133,7 +132,7 @@ export const getDashboardRecipes: RequestHandler = async (req, res) => {
   }
 
   try {
-    const popularRecipes = await queryRecipesBySearchParams({});
+    const popularRecipes = await findRecipes({});
 
     return res.status(HTTPStatusCodes.OK).json({
       popularRecipes,
