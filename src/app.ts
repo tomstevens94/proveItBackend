@@ -10,6 +10,7 @@ import { initializeApp } from "firebase-admin/app";
 import { logIpAddress } from "./utils/logLocalIpAddress";
 import { artificialDelay } from "./middlewares/artificialDelay";
 import { getAppInfo } from "./controllers/appInfoController";
+import { flagRecipe } from "./controllers/flagController";
 
 const { PORT, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === "development";
@@ -20,11 +21,12 @@ isDevelopment && logIpAddress();
 
 const app = express();
 
+// Middleware
+app.use(logger);
+app.use(json());
+
 app.get("/api/app-info", getAppInfo);
 
-// Middleware
-app.use(json());
-app.use(logger);
 app.use(verifyAuthentication);
 
 isDevelopment && app.use(artificialDelay);
@@ -32,6 +34,8 @@ isDevelopment && app.use(artificialDelay);
 // Routing
 app.use("/api/recipes", recipesRouter);
 app.use("/api/user", userRouter);
+
+app.post("/api/flagRecipe", flagRecipe);
 
 setupDatabaseConnection().then(() =>
   app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
