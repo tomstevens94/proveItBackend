@@ -12,6 +12,7 @@ import CompletedRecipeModel from "../models/CompletedRecipeModel";
 import { createCountCompletedRecipesPipelineStages } from "../utils/search/createPipelineStages";
 import RatedRecipeModel from "../models/RatedRecipeModel";
 import { ObjectId } from "mongodb";
+import FlagModel from "../models/FlagModel";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
@@ -287,6 +288,30 @@ export const updateExistingRecipe: RequestHandler = async (req, res) => {
     return res.sendStatus(HTTPStatusCodes.OK);
   } catch (err: any) {
     console.log("Error in ratingsController:", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
+  }
+};
+
+export const deleteRecipe: RequestHandler = async (req, res) => {
+  const userId = req.headers["user-id"];
+  if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+
+  const { recipeId } = req.params;
+  if (!recipeId) return res.sendStatus(HTTPStatusCodes.BadRequest);
+
+  try {
+    await SavedRecipeModel.deleteMany({ recipeId });
+    await RatedRecipeModel.deleteMany({ recipeId });
+    await CompletedRecipeModel.deleteMany({ recipeId });
+    await FlagModel.deleteMany({ recipeId });
+
+    const deletedResult = await RecipeModel.deleteOne({ _id: recipeId });
+    if (deletedResult.deletedCount === 0)
+      return res.sendStatus(HTTPStatusCodes.NotFound);
+
+    return res.sendStatus(HTTPStatusCodes.OK);
+  } catch (err: any) {
+    console.log("Error deleting recipe:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
   }
 };
