@@ -125,7 +125,7 @@ export const getRatedRecipes: RequestHandler = async (req, res) => {
   }
 };
 
-export const getDashboardRecipes: RequestHandler = async (req, res) => {
+export const getPersonalisedRecipes: RequestHandler = async (req, res) => {
   const userId = req.headers["user-id"];
   if (!userId) {
     console.log("Missing userId");
