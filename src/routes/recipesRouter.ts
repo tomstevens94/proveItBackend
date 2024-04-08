@@ -10,6 +10,7 @@ import {
   toggleSaveRecipe,
   postRecipeRating,
   getPersonalisedRecipes,
+  updateExistingRecipe,
 } from "../controllers/recipesController";
 
 const router = express.Router();
@@ -20,6 +21,8 @@ router.get("/rated", getRatedRecipes);
 router.get("/personalised", getPersonalisedRecipes);
 router.get("/:recipeId", getRecipeById);
 // Routes with dynamic URLs must come after ALL other routes of the same method
+
+router.put("/", updateExistingRecipe);
 
 router.post("/search", searchRecipes);
 router.post("/complete", postRecipeIsComplete);

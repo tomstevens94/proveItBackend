@@ -137,10 +137,20 @@ export const getPersonalisedRecipes: RequestHandler = async (req, res) => {
     const recipeOfTheWeek = await findRecipes({
       _id: new ObjectId("64d4ac735c127f006546f5e8"),
     });
+    const createdRecipes = await findRecipes({ createdByUserId: userId });
+    const savedRecipes = await SavedRecipeModel.find({ userId });
+    const ratedRecipes = await RatedRecipeModel.find({ userId });
+    const completedRecipes = await CompletedRecipeModel.aggregate(
+      createCountCompletedRecipesPipelineStages(userId as string)
+    );
 
     return res.status(HTTPStatusCodes.OK).json({
       popularRecipes,
       recipeOfTheWeek: recipeOfTheWeek[0],
+      createdRecipes,
+      savedRecipes,
+      ratedRecipes,
+      completedRecipes,
     });
   } catch (err: any) {
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
@@ -250,6 +260,33 @@ export const postRecipeRating: RequestHandler = async (req, res) => {
     );
 
     return res.sendStatus(HTTPStatusCodes.Created);
+  } catch (err: any) {
+    console.log("Error in ratingsController:", err);
+    return res.sendStatus(HTTPStatusCodes.InternalServerError);
+  }
+};
+
+export const updateExistingRecipe: RequestHandler = async (req, res) => {
+  const userId = req.headers["user-id"];
+  if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
+
+  const updatedRecipe = req.body;
+  if (!updatedRecipe) return res.sendStatus(HTTPStatusCodes.BadRequest);
+
+  try {
+    const recipeFilter = {
+      _id: new ObjectId(updatedRecipe._id),
+    };
+
+    const existingRecipe = await RecipeModel.exists(recipeFilter);
+    if (existingRecipe === null)
+      return res.sendStatus(HTTPStatusCodes.NotFound);
+
+    await RecipeModel.findOneAndUpdate(recipeFilter, updatedRecipe);
+
+    console.log("Recipe updated");
+
+    return res.sendStatus(HTTPStatusCodes.OK);
   } catch (err: any) {
     console.log("Error in ratingsController:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
