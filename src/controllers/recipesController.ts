@@ -284,8 +284,6 @@ export const updateExistingRecipe: RequestHandler = async (req, res) => {
 
     await RecipeModel.findOneAndUpdate(recipeFilter, updatedRecipe);
 
-    console.log("Recipe updated");
-
     return res.sendStatus(HTTPStatusCodes.OK);
   } catch (err: any) {
     console.log("Error in ratingsController:", err);
