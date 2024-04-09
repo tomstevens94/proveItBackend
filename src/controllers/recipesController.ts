@@ -197,9 +197,9 @@ export const postNewRecipe: RequestHandler = async (req, res) => {
 
     recipe.createdByUserId = userId;
 
-    await RecipeModel.create(recipe);
+    const createdRecipe = await RecipeModel.create(recipe);
 
-    return res.sendStatus(HTTPStatusCodes.OK);
+    return res.status(HTTPStatusCodes.OK).json(createdRecipe);
   } catch (err: any) {
     console.log("Error in controller:", err);
     return res.sendStatus(HTTPStatusCodes.BadRequest);
@@ -279,13 +279,22 @@ export const updateExistingRecipe: RequestHandler = async (req, res) => {
       _id: new ObjectId(updatedRecipe._id),
     };
 
-    const existingRecipe = await RecipeModel.exists(recipeFilter);
+    const existingRecipe = await RecipeModel.findOne(recipeFilter);
     if (existingRecipe === null)
       return res.sendStatus(HTTPStatusCodes.NotFound);
 
-    await RecipeModel.findOneAndUpdate(recipeFilter, updatedRecipe);
+    if (existingRecipe.createdByUserId !== userId)
+      return res
+        .sendStatus(HTTPStatusCodes.BadRequest)
+        .json({ message: "User ID does not match the recipe user ID" });
 
-    return res.sendStatus(HTTPStatusCodes.OK);
+    const createdRecipeResult = await RecipeModel.findOneAndUpdate(
+      recipeFilter,
+      updatedRecipe,
+      { new: true }
+    );
+
+    return res.status(HTTPStatusCodes.OK).json(createdRecipeResult);
   } catch (err: any) {
     console.log("Error in ratingsController:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
