@@ -4,6 +4,7 @@ const recipeImageSchema = new Schema({ url: { type: String, required: true } });
 
 const recipeSchema = new Schema({
   title: String,
+  description: String,
   createdByUserId: String,
   difficulty: String,
   images: {
