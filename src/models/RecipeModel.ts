@@ -1,6 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 
-const recipeImageSchema = new Schema({ url: { type: String, required: true } });
+const recipeImageSchema = new Schema({
+  downloadUrl: { type: String, required: true },
+  storageReferencePath: { type: String, required: true },
+});
 
 const recipeSchema = new Schema({
   title: String,
