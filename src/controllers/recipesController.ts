@@ -13,6 +13,7 @@ import { createCountCompletedRecipesPipelineStages } from "../utils/search/creat
 import RatedRecipeModel from "../models/RatedRecipeModel";
 import { ObjectId } from "mongodb";
 import FlagModel from "../models/FlagModel";
+import { getStorage } from "firebase-admin/storage";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
@@ -313,6 +314,18 @@ export const deleteRecipe: RequestHandler = async (req, res) => {
     await RatedRecipeModel.deleteMany({ recipeId });
     await CompletedRecipeModel.deleteMany({ recipeId });
     await FlagModel.deleteMany({ recipeId });
+
+    const storage = getStorage();
+
+    const fullRecipe = await RecipeModel.findOne({ _id: recipeId });
+
+    await Promise.all(
+      (fullRecipe?.images || []).map(async (imageData) => {
+        await storage
+          .bucket()
+          .deleteFiles({ prefix: imageData.storageReferencePath });
+      })
+    );
 
     const deletedResult = await RecipeModel.deleteOne({ _id: recipeId });
     if (deletedResult.deletedCount === 0)
