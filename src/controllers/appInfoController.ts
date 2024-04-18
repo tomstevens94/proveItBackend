@@ -4,7 +4,7 @@ import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 export const getAppInfo: RequestHandler = async (req, res) => {
   try {
     return res.status(HTTPStatusCodes.OK).json({
-      minSupportedVersion: "1.0.6",
+      minSupportedVersion: "1.0.14",
     });
   } catch (err) {
     console.log("Error getting app info", err);
