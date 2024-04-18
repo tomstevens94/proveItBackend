@@ -1,8 +1,7 @@
 import { getStorage } from "firebase-admin/storage";
 
-const storage = getStorage();
-
-export const deleteImage = (imageData: {
+export const deleteImage = async (imageData: {
   downloadUrl: string;
   storageReferencePath: string;
-}) => storage.bucket().deleteFiles({ prefix: imageData.storageReferencePath });
+}) =>
+  getStorage().bucket().deleteFiles({ prefix: imageData.storageReferencePath });
