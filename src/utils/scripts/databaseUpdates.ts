@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import RecipeModel from "../../models/RecipeModel";
 import CompletedRecipeModel from "../../models/CompletedRecipeModel";
 import UserModel from "../../models/UserModel";
+import { blurhashFromURL } from "blurhash-from-url";
 
 export const convertStringFieldToArrayOfObejcts = async () => {
   try {
@@ -113,5 +114,18 @@ export const addOptional = async () => {
     console.log(result);
   } catch (err: any) {
     console.log("Error adding field");
+  }
+};
+
+export const testBlurhashEncoding = async () => {
+  try {
+    console.log("Testing blurhash");
+
+    const output = await blurhashFromURL(
+      "https://firebasestorage.googleapis.com/v0/b/prove-it-7c0b4.appspot.com/o/recipe-images%2Fa2db4474-271d-4b25-8412-0b5748750d1d?alt=media&token=48e9ceea-e54c-4fa2-ac81-a82b707c16eb"
+    );
+    console.log(output);
+  } catch (err: any) {
+    console.log("Error testing blurhash", err);
   }
 };

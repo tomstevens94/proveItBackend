@@ -13,7 +13,7 @@ import { createCountCompletedRecipesPipelineStages } from "../utils/search/creat
 import RatedRecipeModel from "../models/RatedRecipeModel";
 import { ObjectId } from "mongodb";
 import FlagModel from "../models/FlagModel";
-import { deleteImage } from "../utils/images";
+import { deleteImage, encodedBlurhashFromUrl } from "../utils/images";
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
@@ -197,6 +197,19 @@ export const postNewRecipe: RequestHandler = async (req, res) => {
     const userId = req.headers["user-id"];
 
     recipe.createdByUserId = userId;
+
+    recipe.images = await Promise.all(
+      recipe.images.map(async (imageData: any) => {
+        if (!imageData.downloadUrl) return imageData;
+
+        const blurhash = await encodedBlurhashFromUrl(imageData.downloadUrl);
+
+        return {
+          ...imageData,
+          blurhash,
+        };
+      })
+    );
 
     const createdRecipe = await RecipeModel.create(recipe);
 
