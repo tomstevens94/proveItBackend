@@ -26,6 +26,7 @@ const recipeSchema = new Schema({
     {
       id: String,
       title: String,
+      isOptional: Boolean,
       amount: {
         unit: String,
         value: Number,

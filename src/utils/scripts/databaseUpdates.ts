@@ -95,3 +95,23 @@ export const updateOnboardingCompletion = async () => {
     console.log("Error updating users", err);
   }
 };
+
+export const addOptional = async () => {
+  try {
+    console.log("Adding");
+    const recipes = await RecipeModel.find({});
+
+    const result = await RecipeModel.updateMany(
+      {},
+      {
+        $set: {
+          "ingredients.$[].isOptional": false,
+        },
+      }
+    );
+
+    console.log(result);
+  } catch (err: any) {
+    console.log("Error adding field");
+  }
+};
