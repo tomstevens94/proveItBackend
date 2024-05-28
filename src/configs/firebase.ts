@@ -11,7 +11,7 @@ const {
 const firebaseServiceAccount: ServiceAccount = {
   projectId: FIREBASE_PROJECT_ID,
   privateKey: FIREBASE_PRIVATE_KEY
-    ? JSON.parse(FIREBASE_PRIVATE_KEY.replace("\\n", "\n"))
+    ? JSON.parse(FIREBASE_PRIVATE_KEY)
     : undefined,
   clientEmail: FIREBASE_CLIENT_EMAIL,
 };
