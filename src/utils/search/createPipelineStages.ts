@@ -39,7 +39,7 @@ export const createMaxDurationPipelineStage = (
 export const createDifficultyPipelineStage = (
   query: string[]
 ): PipelineStage => ({
-  $match: { difficulty: { $in: query.map((e) => e.toLowerCase()) } },
+  $match: { difficulty: { $in: query } },
 });
 
 export const createRecipeSaveCountPipelineStages = (): PipelineStage[] => [

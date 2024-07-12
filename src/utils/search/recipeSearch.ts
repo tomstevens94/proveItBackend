@@ -31,9 +31,9 @@ export const findRecipes = async (
     createAdditionalRecipeFieldsAggregatePiplineStages();
 
   const queriedRecipes = await RecipeModel.aggregate([
-    { $match: filter },
     ...searchAggregatePipelineStages,
     ...additionalFieldsPipelineStages,
+    { $match: filter },
   ]);
 
   return queriedRecipes;
