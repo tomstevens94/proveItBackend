@@ -135,7 +135,16 @@ export const getPersonalisedRecipes: RequestHandler = async (req, res) => {
   }
 
   try {
-    const popularRecipes = await findRecipes({});
+    const popularRecipesQuery = {
+      _id: {
+        $in: [
+          new ObjectId("6499b754911584d5fc36e2de"),
+          new ObjectId("64d4ac735c127f006546f5e8"),
+          new ObjectId("66254c062d6bf8083bea281e"),
+        ],
+      },
+    };
+    const popularRecipes = await findRecipes(popularRecipesQuery);
     const recipeOfTheWeek = await findRecipes({
       _id: new ObjectId("64d4ac735c127f006546f5e8"),
     });
