@@ -1,11 +1,7 @@
 import { RequestHandler } from "express";
-import RecipeModel from "../models/RecipeModel";
+import RecipeModel from "../models/InternalRecipeModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
-import {
-  createAdditionalRecipeFieldsAggregatePiplineStages,
-  createQueryBy_IdArrayPipelineStage,
-  findRecipes,
-} from "../utils/search/recipeSearch";
+import { findRecipes } from "../utils/search/recipeSearch";
 import SavedRecipeModel from "../models/SavedRecipeModel";
 import mongoose from "mongoose";
 import CompletedRecipeModel from "../models/CompletedRecipeModel";
@@ -21,7 +17,11 @@ export const searchRecipes: RequestHandler = async (req, res) => {
 
     const queriedRecipes = await findRecipes({}, searchParams);
 
-    return res.status(HTTPStatusCodes.OK).json(queriedRecipes);
+    const sortedRecipes = queriedRecipes.sort(
+      (a, b) => b.communityRating - a.communityRating
+    );
+
+    return res.status(HTTPStatusCodes.OK).json(sortedRecipes);
   } catch (err) {
     console.log(err);
     return res
@@ -38,46 +38,16 @@ export const getRecipeById: RequestHandler = async (req, res) => {
     return res.sendStatus(HTTPStatusCodes.BadRequest);
   }
 
-  const recipeIdArray = recipeId.split(";");
+  const recipes = await findRecipes({ _id: new ObjectId(recipeId) });
 
-  if (!recipeIdArray || recipeIdArray.length === 0) {
-    console.log("No recipeIds in request params");
-    return res.sendStatus(HTTPStatusCodes.BadRequest);
-  }
-
-  if (recipeIdArray.some((e) => !mongoose.Types.ObjectId.isValid(e))) {
-    console.log("Invalid recipeId within array");
-    return res.sendStatus(HTTPStatusCodes.BadRequest);
-  }
-
-  const recipeIdObjectIds = recipeIdArray.map(
-    (e) => new mongoose.Types.ObjectId(e)
-  );
-
-  const matchedRecipes = await RecipeModel.aggregate([
-    createQueryBy_IdArrayPipelineStage(recipeIdObjectIds),
-    ...createAdditionalRecipeFieldsAggregatePiplineStages(),
-  ]);
-
-  if (recipeIdObjectIds.length === 1) {
-    // Single recipe requested
-    if (matchedRecipes.length === 1) {
-      return res.status(HTTPStatusCodes.OK).json(matchedRecipes[0]);
-    } else {
-      const errorMsg = `${matchedRecipes.length},
-      "recipes found after requesting single recipe"`;
-      console.log(errorMsg);
-
-      return res.status(HTTPStatusCodes.NotFound).json(errorMsg);
-    }
+  if (recipes.length === 1 && recipes[0]) {
+    return res.status(HTTPStatusCodes.OK).json(recipes[0]);
   } else {
-    // Multiple recipes requested
-    if (matchedRecipes.length > 0) {
-      return res.status(HTTPStatusCodes.OK).json(matchedRecipes);
-    } else {
-      console.log("No recipes found after requesting multiple recipes");
-      return res.status(HTTPStatusCodes.NotFound);
-    }
+    const errorMsg = `${recipes.length},
+      "recipes found after requesting single recipe"`;
+    console.log(errorMsg);
+
+    return res.sendStatus(HTTPStatusCodes.NotFound);
   }
 };
 
