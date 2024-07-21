@@ -1,18 +1,18 @@
 import mongoose, { Schema } from "mongoose";
 
-const recipeImageSchema = new Schema({
+const internalRecipeImageSchema = new Schema({
   downloadUrl: { type: String, required: true },
   storageReferencePath: { type: String, required: true },
   blurhash: { type: String, required: true },
 });
 
-const recipeSchema = new Schema({
+const internalRecipeSchema = new Schema({
   title: String,
   description: String,
   createdByUserId: String,
   difficulty: String,
   images: {
-    type: [recipeImageSchema],
+    type: [internalRecipeImageSchema],
     required: true,
   },
   categories: [String],
@@ -64,4 +64,4 @@ const recipeSchema = new Schema({
   ],
 });
 
-export default mongoose.model("Recipe", recipeSchema);
+export default mongoose.model("InternalRecipe", internalRecipeSchema);

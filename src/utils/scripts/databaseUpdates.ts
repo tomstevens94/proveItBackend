@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import RecipeModel from "../../models/RecipeModel";
+import RecipeModel from "../../models/InternalRecipeModel";
 import CompletedRecipeModel from "../../models/CompletedRecipeModel";
 import UserModel from "../../models/UserModel";
 import { blurhashFromURL } from "blurhash-from-url";

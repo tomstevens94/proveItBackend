@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import UserModel from "../models/UserModel";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
 import { getAuth } from "firebase-admin/auth";
-import RecipeModel from "../models/RecipeModel";
+import RecipeModel from "../models/InternalRecipeModel";
 import RatedRecipeModel from "../models/RatedRecipeModel";
 import SavedRecipeModel from "../models/SavedRecipeModel";
 

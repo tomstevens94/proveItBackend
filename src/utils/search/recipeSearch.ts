@@ -10,7 +10,8 @@ import {
   createRecipeCommunityRatingPipelineStages,
   createPopulateCreateDetailsPipelineStages,
 } from "./createPipelineStages";
-import RecipeModel from "../../models/RecipeModel";
+import InternalRecipeModel from "../../models/InternalRecipeModel";
+import ExternalRecipeModel from "../../models/ExternalRecipeModel";
 
 export interface RecipeSearchParams {
   text?: string;
@@ -30,13 +31,16 @@ export const findRecipes = async (
   const additionalFieldsPipelineStages =
     createAdditionalRecipeFieldsAggregatePiplineStages();
 
-  const queriedRecipes = await RecipeModel.aggregate([
+  const query: PipelineStage[] = [
     ...searchAggregatePipelineStages,
     ...additionalFieldsPipelineStages,
     { $match: filter },
-  ]);
+  ];
 
-  return queriedRecipes;
+  const queriedInternalRecipes = await InternalRecipeModel.aggregate(query);
+  const queriedExternalRecipes = await ExternalRecipeModel.aggregate(query);
+
+  return queriedInternalRecipes.concat(...queriedExternalRecipes);
 };
 
 export const createRecipeSearchAggregatePiplineStages = (
@@ -110,9 +114,3 @@ export const createAdditionalRecipeFieldsAggregatePiplineStages =
 
     return aggregatePipeline;
   };
-
-export const createQueryBy_IdArrayPipelineStage = (
-  _idArray: mongoose.Types.ObjectId[]
-) => ({
-  $match: { $expr: { $in: ["$_id", _idArray] } },
-});
