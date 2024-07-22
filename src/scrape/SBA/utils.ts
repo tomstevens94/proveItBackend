@@ -1,11 +1,10 @@
-import { CheerioAPI } from "cheerio";
+import { Cheerio, CheerioAPI, Element } from "cheerio";
 import {
   ExternalRecipe,
   ExternalRecipeImage,
   ExternalRecipeIngredient,
   ExternalRecipeStep,
   RecipeIngredientGroup,
-  RecipeStep,
   RecipeStepGroup,
   Time,
   TimeUnit,
@@ -13,6 +12,33 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { URL } from "url";
 import { encodedBlurhashFromUrl } from "../../utils/images";
+import { sbaBaseUrl } from "./sites";
+
+const findAnchorsToRemove = (
+  $: CheerioAPI,
+  e: Cheerio<Element>,
+  cache: string[] = []
+): string[] => {
+  let anchorsToRemove: string[] = cache;
+
+  e.children().map((_, child) => {
+    const childCheerio = $(child);
+
+    if (child.tagName === "a") {
+      const href = childCheerio.attr("href");
+
+      if (href && href.includes(sbaBaseUrl)) {
+        anchorsToRemove.push(childCheerio.text());
+      }
+    }
+
+    if (childCheerio.children().length > 1) {
+      findAnchorsToRemove($, childCheerio, anchorsToRemove);
+    }
+  });
+
+  return anchorsToRemove;
+};
 
 const isValidURL = (string: string) => {
   try {
@@ -30,6 +56,11 @@ export const getTimeUnit = (str: string): TimeUnit => {
     case "hours":
       return TimeUnit.Hour;
 
+    case "min":
+    case "mins":
+    case "minutes":
+      return TimeUnit.Minute;
+
     default:
       throw new Error("Invalid time unit");
   }
@@ -38,7 +69,7 @@ export const getTimeUnit = (str: string): TimeUnit => {
 export const getDuration = ($: CheerioAPI): Time => {
   const durationString = $(".tasty-recipes-total-time").text().trim();
 
-  let matches = durationString.match(/([0-9]*) (hours)/);
+  let matches = durationString.match(/([0-9]*) (hours|minutes)/);
   if (matches === null || matches.length < 3)
     throw new Error("Invalid duration");
 
@@ -59,42 +90,48 @@ export const getIngredientsAndGroups = (
 
   const ingredientsBody = $(".tasty-recipes-ingredients-body");
 
-  let ingredientGroupHeaders = ingredientsBody.find("h4");
-
-  if (ingredientGroupHeaders.length === 0)
-    throw new Error("No group headers found");
-
-  // Groups are in pairs of h4 - ul
-  let ingredientGroupHeader = ingredientGroupHeaders.first();
-
-  while (ingredientGroupHeader.get()[0]?.tagName === "h4") {
-    // Get string value of group title
-    const ingredientGroupTitle = ingredientGroupHeader.text().trim();
-    const ingredientGroup: RecipeIngredientGroup = {
-      id: uuidv4(),
-      title: ingredientGroupTitle,
-    };
-    ingredientGroups.push(ingredientGroup);
-
-    // List of ingredients - should be h4
-    const ingredientsHtml = ingredientGroupHeader.next();
-    const ingredientsHtmlTagName = ingredientsHtml.get()[0].tagName;
+  const getIngredientsFromUlElement = (ulElement: Cheerio<Element>) => {
+    const ingredientsHtmlTagName = ulElement.get()[0].tagName;
     if (ingredientsHtmlTagName !== "ul")
       throw new Error(
         "Invalid tagname in ingredient group " + ingredientsHtmlTagName
       );
 
-    const ingredientStrings = ingredientsHtml.text().trim().split("\n");
-    ingredients.push(
-      ...ingredientStrings.map((title) => ({
-        id: uuidv4(),
-        title,
-        groupId: ingredientGroup.id,
-      }))
-    );
+    const ingredientTitles = ulElement.text().trim().split("\n");
 
-    // Continue next iteration with next header
-    ingredientGroupHeader = ingredientsHtml.next();
+    return ingredientTitles;
+  };
+
+  let child = ingredientsBody.children().first();
+  let currentGroup: RecipeIngredientGroup | undefined = undefined;
+
+  while (["ul", "h4"].includes(child.get()[0]?.tagName)) {
+    const tagName = child.get()[0]?.tagName;
+
+    if (tagName === "h4") {
+      currentGroup = {
+        id: uuidv4(),
+        title: child.text().trim().replace(/\**$/, ""),
+      };
+      ingredientGroups.push(currentGroup);
+    } else {
+      const ingredientTitles = getIngredientsFromUlElement(child);
+
+      ingredients.push(
+        ...ingredientTitles.map((title) => {
+          const obj: ExternalRecipeIngredient = {
+            id: uuidv4(),
+            title: title.trim().replace(/\**$/, ""),
+          };
+
+          if (currentGroup) obj.groupId = currentGroup.id;
+
+          return obj;
+        })
+      );
+    }
+
+    child = child.next();
   }
 
   return {
@@ -116,16 +153,20 @@ export const getSteps = (
   if (stepsList.length !== 1)
     throw new Error("Invalid number of step sections found");
 
-  // const stepStrings: string[] = stepsLists.text().trim().split("\n");
-
   let child = stepsList.children().first();
   let currentGroup: RecipeStepGroup | undefined = undefined;
 
-  while (child.get()[0]?.tagName === "li") {
-    const firstChild = child.children().first();
-    const firstChildTagName = firstChild.get()[0]?.tagName;
+  const anchorsToRemove = findAnchorsToRemove($, stepsList);
 
-    if (firstChildTagName === "strong") {
+  while (child.get()[0]?.tagName === "li") {
+    // Contents required over children to detect text nodes as well as tags
+    const firstChild = child.contents().first();
+    const firstChildNode = firstChild.get()[0];
+
+    const isStrong =
+      firstChildNode.type === "tag" && firstChildNode.tagName === "strong";
+
+    if (isStrong) {
       const stepGroup: RecipeStepGroup = {
         id: uuidv4(),
         title: firstChild.text().trim(),
@@ -136,9 +177,18 @@ export const getSteps = (
       firstChild.remove();
     }
 
+    let sentences = child.text().trim().split(".");
+
+    anchorsToRemove.forEach(
+      (anchor) =>
+        (sentences = sentences.filter((sentence) => !sentence.includes(anchor)))
+    );
+
+    const description = sentences.join(".").replace(/\**$/, "");
+
     const step: ExternalRecipeStep = {
       id: uuidv4(),
-      description: child.text().trim(),
+      description,
     };
     if (currentGroup) {
       step.groupId = currentGroup.id;
@@ -148,14 +198,6 @@ export const getSteps = (
 
     child = child.next();
   }
-
-  // Remove any sentences from each step that contain an internal link
-  // console.log(stepStrings);
-
-  // const steps: ExternalRecipeStep[] = stepStrings.map((description) => ({
-  //   id: uuidv4(),
-  //   description,
-  // }));
 
   return { steps, stepGroups };
 };

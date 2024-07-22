@@ -8,6 +8,7 @@ import {
   getSteps,
 } from "./utils";
 import ExternalRecipeModel from "../../models/ExternalRecipeModel";
+import { sbaSites } from "./sites";
 
 export const scrape = async () => {
   const enabled = false;
@@ -18,44 +19,50 @@ export const scrape = async () => {
 
   console.log("Scraping");
 
-  const sourceUrl =
-    "https://sallysbakingaddiction.com/lemon-blueberry-layer-cake/#tasty-recipes-67801";
+  await Promise.all(
+    sbaSites.map(async (sourceUrl) => {
+      try {
+        const recipeExists = await ExternalRecipeModel.exists({ sourceUrl });
+        if (recipeExists) {
+          console.log("Recipe already exists");
+          return;
+        }
 
-  const recipeExists = await ExternalRecipeModel.exists({ sourceUrl });
-  if (recipeExists) throw new Error("Recipe already exists");
+        const html = await fetchHtml(sourceUrl);
+        const $ = cheerio.load(html);
 
-  const html = await fetchHtml(sourceUrl);
-  const $ = cheerio.load(html);
+        const title = $(".tasty-recipes-title").text().trim();
+        const description = $(".tasty-recipes-description-body").text().trim();
+        const duration = getDuration($);
 
-  const title = $(".tasty-recipes-title").text().trim();
-  const description = $(".tasty-recipes-description-body").text().trim();
+        const { ingredients, ingredientGroups } = getIngredientsAndGroups($);
+        const { steps, stepGroups } = getSteps($);
 
-  const duration = getDuration($);
+        const images = await getImage($);
 
-  const { ingredients, ingredientGroups } = getIngredientsAndGroups($);
-  const { steps, stepGroups } = getSteps($);
+        const externalRecipe: Partial<ExternalRecipe> = {
+          sourceUrl,
+          title,
+          description,
+          duration,
+          ingredients,
+          ingredientGroups,
+          steps,
+          stepGroups,
+          images,
+        };
 
-  console.log(steps);
-  console.log(stepGroups);
+        const createdExternalRecipe = await ExternalRecipeModel.create(
+          externalRecipe
+        );
 
-  const images = await getImage($);
+        console.log("Recipe created: ", createdExternalRecipe.title);
 
-  const externalRecipe: Partial<ExternalRecipe> = {
-    sourceUrl,
-
-    title,
-    description,
-    duration,
-    ingredients,
-    ingredientGroups,
-    steps,
-    stepGroups,
-    images,
-  };
-
-  const createdExternalRecipe = await ExternalRecipeModel.create(
-    externalRecipe
+        return createdExternalRecipe;
+      } catch (err: any) {
+        console.log("Error scraping: ", sourceUrl, err);
+        return;
+      }
+    })
   );
-
-  console.log("Recipe created: ", createdExternalRecipe.title);
 };
