@@ -4,7 +4,7 @@ import { MongoDBIndexNames } from "../../configs/mongoDBIndexNames";
 export const createSearchPipelineStage = (query: string): PipelineStage => ({
   $search: {
     index: MongoDBIndexNames.RecipeTextSearch,
-    autocomplete: {
+    text: {
       query,
       path: ["title", "description"],
       fuzzy: { maxEdits: 1 },
