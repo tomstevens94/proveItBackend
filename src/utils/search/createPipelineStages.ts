@@ -6,7 +6,7 @@ export const createSearchPipelineStage = (query: string): PipelineStage => ({
     index: MongoDBIndexNames.RecipeTextSearch,
     text: {
       query,
-      path: ["title", "description"],
+      path: { wildcard: "*" },
       fuzzy: { maxEdits: 1 },
     },
   },
