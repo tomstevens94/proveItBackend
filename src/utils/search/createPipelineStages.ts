@@ -6,8 +6,8 @@ export const createSearchPipelineStage = (query: string): PipelineStage => ({
     index: MongoDBIndexNames.RecipeTextSearch,
     autocomplete: {
       query,
-      path: "title",
-      fuzzy: { maxEdits: 2 },
+      path: ["title", "description"],
+      fuzzy: { maxEdits: 1 },
     },
   },
 });
