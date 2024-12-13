@@ -160,7 +160,11 @@ export const postRecipeIsComplete: RequestHandler = async (req, res) => {
       recipeId: new mongoose.Types.ObjectId(recipeId),
     });
 
-    return res.sendStatus(HTTPStatusCodes.Created);
+    const completedRecipes = await CompletedRecipeModel.aggregate(
+      createCountCompletedRecipesPipelineStages(userId as string)
+    );
+
+    return res.status(HTTPStatusCodes.Created).json(completedRecipes);
   } catch (err: any) {
     console.log(err);
 
