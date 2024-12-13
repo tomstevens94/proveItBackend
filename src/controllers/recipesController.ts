@@ -257,7 +257,9 @@ export const postRecipeRating: RequestHandler = async (req, res) => {
       { upsert: true }
     );
 
-    return res.sendStatus(HTTPStatusCodes.Created);
+    const ratedRecipes = await RatedRecipeModel.find({ userId });
+
+    return res.status(HTTPStatusCodes.Created).json(ratedRecipes);
   } catch (err: any) {
     console.log("Error in ratingsController:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
