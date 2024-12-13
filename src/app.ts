@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import expressWs from "express-ws";
 import "dotenv/config";
 import { setupDatabaseConnection } from "./utils/setupDatabaseConnection";
 import { logger } from "./middlewares/logger";
@@ -11,6 +12,8 @@ import { logIpAddress } from "./utils/logLocalIpAddress";
 import { artificialDelay } from "./middlewares/artificialDelay";
 import { getAppInfo } from "./controllers/appInfoController";
 import { flagRecipe } from "./controllers/flagController";
+import aiRouter from "./routes/aiRouter";
+import { sendOpenAiMessage } from "./controllers/aiController";
 
 const { PORT, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === "development";
@@ -19,7 +22,38 @@ initializeApp(firebaseAppConfig);
 
 isDevelopment && logIpAddress();
 
-const app = express();
+const { app } = expressWs(express());
+
+isDevelopment && app.use(artificialDelay);
+
+// TODO: WebSocket Authentication
+app.ws("/ai", (ws, req) => {
+  ws.send(JSON.stringify({ status: "open" }));
+
+  ws.on("message", async (message) => {
+    console.log("Message received", message);
+    setTimeout(() => {
+      ws.send(
+        JSON.stringify({
+          messageStatus: "receiptConfirmed",
+          payload: JSON.stringify(message),
+        }),
+        (err) => err && console.log("Error sending confirmation")
+      );
+    }, 5000);
+    const openAiResponse = await sendOpenAiMessage(message.toString());
+
+    const payload = JSON.stringify(openAiResponse?.choices[0].message);
+    console.log("payload", payload);
+
+    ws.send(payload, (err) => err && console.log("ERR?", err));
+  });
+  ws.on("error", (err) => err && console.log("Error in socket", err));
+  ws.on("close", () => {
+    console.log("Socket closed");
+    ws.send(JSON.stringify({ status: "closed" }));
+  });
+});
 
 // Middleware
 app.use(logger);
@@ -28,8 +62,6 @@ app.use(json());
 app.get("/api/app-info", getAppInfo);
 
 app.use(verifyAuthentication);
-
-isDevelopment && app.use(artificialDelay);
 
 // Routing
 app.use("/api/recipes", recipesRouter);
