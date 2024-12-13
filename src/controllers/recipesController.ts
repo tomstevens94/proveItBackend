@@ -194,8 +194,15 @@ export const postNewRecipe: RequestHandler = async (req, res) => {
       })
     );
 
-    const createdRecipe = await RecipeModel.create(recipe);
+    const { _id } = await RecipeModel.create(recipe);
 
+    const queriedRecipes = await findRecipes({ _id });
+
+    if (queriedRecipes.length !== 1) {
+      return res.sendStatus(HTTPStatusCodes.InternalServerError);
+    }
+
+    const createdRecipe = queriedRecipes[0];
     return res.status(HTTPStatusCodes.OK).json(createdRecipe);
   } catch (err: any) {
     console.log("Error in controller:", err);
@@ -222,14 +229,18 @@ export const toggleSaveRecipe: RequestHandler = async (req, res) => {
     if (recipeAreadySavedByUser) {
       // Unsave recipe
       await SavedRecipeModel.deleteMany(savedRecipeObject);
-
-      return res.sendStatus(HTTPStatusCodes.OK);
     } else {
       // Save recipe
       await SavedRecipeModel.create(savedRecipeObject);
-
-      return res.sendStatus(HTTPStatusCodes.Created);
     }
+
+    const savedRecipes = await SavedRecipeModel.find({ userId });
+    console.log(savedRecipes);
+
+    const statusCode = recipeAreadySavedByUser
+      ? HTTPStatusCodes.OK
+      : HTTPStatusCodes.Created;
+    return res.status(statusCode).json(savedRecipes);
   } catch (err) {
     console.log("Error saving recipe:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
@@ -287,13 +298,21 @@ export const updateExistingRecipe: RequestHandler = async (req, res) => {
         .sendStatus(HTTPStatusCodes.BadRequest)
         .json({ message: "User ID does not match the recipe user ID" });
 
-    const createdRecipeResult = await RecipeModel.findOneAndUpdate(
+    const updateResult = await RecipeModel.findOneAndUpdate(
       recipeFilter,
-      updatedRecipe,
-      { new: true }
+      updatedRecipe
     );
 
-    return res.status(HTTPStatusCodes.OK).json(createdRecipeResult);
+    if (!updateResult) {
+      return res.sendStatus(HTTPStatusCodes.NotFound);
+    }
+
+    const queriedRecipes = await findRecipes({ _id: updateResult._id });
+    if (queriedRecipes.length !== 1) {
+      return res.sendStatus(HTTPStatusCodes.InternalServerError);
+    }
+
+    return res.status(HTTPStatusCodes.OK).json(queriedRecipes[0]);
   } catch (err: any) {
     console.log("Error in ratingsController:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
