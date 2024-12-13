@@ -68,12 +68,11 @@ export const updateUserData: RequestHandler = async (req, res) => {
   }
 
   try {
-    const result = await UserModel.updateOne({ userId }, data);
+    const existingUser = await UserModel.findOneAndUpdate({ userId }, data, {
+      new: true,
+    });
 
-    if (result.modifiedCount === 0)
-      return res.sendStatus(HTTPStatusCodes.NotFound);
-
-    return res.sendStatus(HTTPStatusCodes.OK);
+    return res.status(HTTPStatusCodes.OK).json(existingUser);
   } catch (err: any) {
     console.log("Error updating user data:", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
