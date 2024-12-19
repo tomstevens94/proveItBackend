@@ -111,6 +111,7 @@ export const getPersonalisedRecipes: RequestHandler = async (req, res) => {
           new ObjectId("6499b754911584d5fc36e2de"),
           new ObjectId("64d4ac735c127f006546f5e8"),
           new ObjectId("66254c062d6bf8083bea281e"),
+          new ObjectId("669e21c8c2e6fdd3b23e3012"),
         ],
       },
     };

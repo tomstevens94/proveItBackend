@@ -1,5 +1,5 @@
 import { fetchHtml } from "../utils";
-import { ExternalRecipe, Recipe } from "../../typesWIP/recipe";
+import { ExternalRecipe } from "../../typesWIP/recipe";
 import * as cheerio from "cheerio";
 import {
   getDuration,
