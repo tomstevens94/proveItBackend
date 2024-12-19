@@ -43,7 +43,12 @@ export interface Recipe {
   title: string;
   description: string;
   creatorDetails: UserData;
+  // TODO Remove communityRating - Removed from FE code as of v1.3.0
   communityRating: number | null;
+  rating?: {
+    value: number | null;
+    totalRatings: number;
+  };
   totalSaves: number;
   difficulty: RecipeDifficulty;
   images: RecipeImage[];

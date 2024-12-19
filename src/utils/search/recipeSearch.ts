@@ -9,6 +9,7 @@ import {
   createRecipeSaveCountPipelineStages,
   createRecipeCommunityRatingPipelineStages,
   createPopulateCreateDetailsPipelineStages,
+  createRecipeRatingPipelineStages,
 } from "./createPipelineStages";
 import InternalRecipeModel from "../../models/InternalRecipeModel";
 import ExternalRecipeModel from "../../models/ExternalRecipeModel";
@@ -108,6 +109,9 @@ export const createAdditionalRecipeFieldsAggregatePiplineStages =
 
     // Get recipe community rating
     aggregatePipeline.push(...createRecipeCommunityRatingPipelineStages());
+
+    // Get recipe rating
+    aggregatePipeline.push(...createRecipeRatingPipelineStages());
 
     // Get recipe creator details
     aggregatePipeline.push(...createPopulateCreateDetailsPipelineStages());
