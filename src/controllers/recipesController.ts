@@ -10,6 +10,28 @@ import RatedRecipeModel from "../models/RatedRecipeModel";
 import { ObjectId } from "mongodb";
 import FlagModel from "../models/FlagModel";
 import { deleteImage, encodedBlurhashFromUrl } from "../utils/images";
+import RecipeViewModel from "../models/RecipeViewModel";
+
+export const logRecipeView: RequestHandler = async (req, res) => {
+  try {
+    const { recipeId } = req.body;
+
+    const userId = req.headers["user-id"];
+    if (!userId) {
+      console.log("Missing userId");
+      return res.sendStatus(HTTPStatusCodes.Unauthorized);
+    }
+
+    await RecipeViewModel.create({ userId, recipeId });
+
+    return res.sendStatus(HTTPStatusCodes.Created);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(HTTPStatusCodes.InternalServerError)
+      .json("Unable to log recipe view");
+  }
+};
 
 export const searchRecipes: RequestHandler = async (req, res) => {
   try {
