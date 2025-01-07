@@ -6,7 +6,7 @@ export const getAppInfo: RequestHandler = async (req, res) => {
     return res.status(HTTPStatusCodes.OK).json({
       minSupportedVersion: "1.1.0",
       appUrl: {
-        ios: "https://www.apple.com/app-store/",
+        ios: "https://apps.apple.com/gb/app/prove-it/id6475770604",
         android: "https://play.google.com/store/",
       },
     });
