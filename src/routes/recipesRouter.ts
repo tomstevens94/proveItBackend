@@ -12,6 +12,7 @@ import {
   getPersonalisedRecipes,
   updateExistingRecipe,
   deleteRecipe,
+  logRecipeView,
 } from "../controllers/recipesController";
 
 const router = express.Router();
@@ -32,5 +33,6 @@ router.post("/complete", postRecipeIsComplete);
 router.post("/new", postNewRecipe);
 router.post("/toggleSave", toggleSaveRecipe);
 router.post("/rate", postRecipeRating);
+router.post("/viewed", logRecipeView);
 
 export default router;
