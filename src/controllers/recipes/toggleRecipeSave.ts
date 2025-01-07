@@ -28,7 +28,6 @@ export const toggleRecipeSave: RequestHandler = async (req, res) => {
     }
 
     const savedRecipes = await SavedRecipeModel.find({ userId });
-    console.log(savedRecipes);
 
     const statusCode = recipeAreadySavedByUser
       ? HTTPStatusCodes.OK
