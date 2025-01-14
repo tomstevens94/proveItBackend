@@ -87,6 +87,35 @@ export const createRecipeCommunityRatingPipelineStages =
     { $unset: "recipeRatingsTemp" },
   ];
 
+export const createRecipeRatingPipelineStages = (): PipelineStage[] => [
+  // Temporarily store all ratings of this recipe in new field
+  {
+    $lookup: {
+      from: "ratedrecipes",
+      localField: "_id",
+      foreignField: "recipeId",
+      as: "recipeRatingsTemp",
+    },
+  },
+  // Calculate and save values
+  {
+    $addFields: {
+      rating: {
+        value: {
+          $cond: {
+            if: { $gt: [{ $size: "$recipeRatingsTemp" }, 0] },
+            then: { $avg: "$recipeRatingsTemp.rating" },
+            else: null,
+          },
+        },
+        totalRatings: { $size: "$recipeRatingsTemp" },
+      },
+    },
+  },
+  // Remove temp documents
+  { $unset: "recipeRatingsTemp" },
+];
+
 export const createPopulateCreateDetailsPipelineStages =
   (): PipelineStage[] => [
     // Join with user docs
