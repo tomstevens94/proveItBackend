@@ -12,8 +12,11 @@ import { logIpAddress } from "./utils/logLocalIpAddress";
 import { artificialDelay } from "./middlewares/artificialDelay";
 import { getAppInfo } from "./controllers/appInfoController";
 import { flagRecipe } from "./controllers/flagController";
-import aiRouter from "./routes/aiRouter";
 import { sendOpenAiMessage } from "./controllers/aiController";
+import { Server } from "socket.io";
+import { createServer } from "http";
+import { verifySocketAuthentication } from "./middlewares/socket";
+import { delayCallback } from "./utils/delay";
 
 const { PORT, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === "development";
@@ -23,37 +26,41 @@ initializeApp(firebaseAppConfig);
 isDevelopment && logIpAddress();
 
 const { app } = expressWs(express());
+const server = createServer(app);
 
 isDevelopment && app.use(artificialDelay);
 
-// TODO: WebSocket Authentication
-app.ws("/ai", (ws, req) => {
-  ws.send(JSON.stringify({ status: "open" }));
+const io = new Server(server);
 
-  ws.on("message", async (message) => {
-    console.log("Message received", message);
-    setTimeout(() => {
-      ws.send(
-        JSON.stringify({
-          messageStatus: "receiptConfirmed",
-          payload: JSON.stringify(message),
-        }),
-        (err) => err && console.log("Error sending confirmation")
-      );
-    }, 5000);
-    const openAiResponse = await sendOpenAiMessage(message.toString());
+io.use((_, next) => delayCallback(() => next(), 1000));
+io.use(verifySocketAuthentication);
 
-    const payload = JSON.stringify(openAiResponse?.choices[0].message);
-    console.log("payload", payload);
-
-    ws.send(payload, (err) => err && console.log("ERR?", err));
-  });
-  ws.on("error", (err) => err && console.log("Error in socket", err));
-  ws.on("close", () => {
-    console.log("Socket closed");
-    ws.send(JSON.stringify({ status: "closed" }));
-  });
+io.on("error", (e) => {
+  console.log(`Error within socket: ${e}`);
 });
+
+io.on("connection", (socket) => {
+  const userId = socket.handshake.auth.userId;
+
+  if (typeof userId === "string") {
+    socket.join(userId);
+
+    socket.on("message", async (payload) => {
+      try {
+        const response = await sendOpenAiMessage(payload.content);
+        const responseContent = response?.choices[0]?.message?.content;
+
+        socket.send(responseContent);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  } else {
+    console.log("unable to join room");
+  }
+});
+
+io.on("disconnect", (socket) => {});
 
 // Middleware
 app.use(logger);
@@ -70,5 +77,5 @@ app.use("/api/user", userRouter);
 app.post("/api/flagRecipe", flagRecipe);
 
 setupDatabaseConnection().then(() =>
-  app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+  server.listen(PORT, () => console.log(`Listening on port ${PORT}`))
 );
