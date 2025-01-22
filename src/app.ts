@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import expressWs from "express-ws";
 import "dotenv/config";
 import { setupDatabaseConnection } from "./utils/setupDatabaseConnection";
 import { logger } from "./middlewares/logger";
@@ -11,6 +12,11 @@ import { logIpAddress } from "./utils/logLocalIpAddress";
 import { artificialDelay } from "./middlewares/artificialDelay";
 import { getAppInfo } from "./controllers/appInfoController";
 import { flagRecipe } from "./controllers/flagController";
+import { sendOpenAiMessage } from "./controllers/aiController";
+import { Server } from "socket.io";
+import { createServer } from "http";
+import { verifySocketAuthentication } from "./middlewares/socket";
+import { delayCallback } from "./utils/delay";
 
 const { PORT, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === "development";
@@ -19,7 +25,42 @@ initializeApp(firebaseAppConfig);
 
 isDevelopment && logIpAddress();
 
-const app = express();
+const { app } = expressWs(express());
+const server = createServer(app);
+
+isDevelopment && app.use(artificialDelay);
+
+const io = new Server(server);
+
+io.use((_, next) => delayCallback(() => next(), 1000));
+io.use(verifySocketAuthentication);
+
+io.on("error", (e) => {
+  console.log(`Error within socket: ${e}`);
+});
+
+io.on("connection", (socket) => {
+  const userId = socket.handshake.auth.userId;
+
+  if (typeof userId === "string") {
+    socket.join(userId);
+
+    socket.on("message", async (payload) => {
+      try {
+        const response = await sendOpenAiMessage(payload.content);
+        const responseContent = response?.choices[0]?.message?.content;
+
+        socket.send(responseContent);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  } else {
+    console.log("unable to join room");
+  }
+});
+
+io.on("disconnect", (socket) => {});
 
 // Middleware
 app.use(logger);
@@ -29,8 +70,6 @@ app.get("/api/app-info", getAppInfo);
 
 app.use(verifyAuthentication);
 
-isDevelopment && app.use(artificialDelay);
-
 // Routing
 app.use("/api/recipes", recipesRouter);
 app.use("/api/user", userRouter);
@@ -38,5 +77,5 @@ app.use("/api/user", userRouter);
 app.post("/api/flagRecipe", flagRecipe);
 
 setupDatabaseConnection().then(() =>
-  app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+  server.listen(PORT, () => console.log(`Listening on port ${PORT}`))
 );
