@@ -12,11 +12,11 @@ import { logIpAddress } from "./utils/logLocalIpAddress";
 import { artificialDelay } from "./middlewares/artificialDelay";
 import { getAppInfo } from "./controllers/appInfoController";
 import { flagRecipe } from "./controllers/flagController";
-import { sendOpenAiMessage } from "./controllers/aiController";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { verifySocketAuthentication } from "./middlewares/socket";
 import { delayCallback } from "./utils/delay";
+import { onConnection as onSocketConnection } from "./socket/onConnection";
 
 const { PORT, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === "development";
@@ -35,32 +35,7 @@ const io = new Server(server);
 io.use((_, next) => delayCallback(() => next(), 1000));
 io.use(verifySocketAuthentication);
 
-io.on("error", (e) => {
-  console.log(`Error within socket: ${e}`);
-});
-
-io.on("connection", (socket) => {
-  const userId = socket.handshake.auth.userId;
-
-  if (typeof userId === "string") {
-    socket.join(userId);
-
-    socket.on("message", async (payload) => {
-      try {
-        const response = await sendOpenAiMessage(payload.content);
-        const responseContent = response?.choices[0]?.message?.content;
-
-        socket.send(responseContent);
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  } else {
-    console.log("unable to join room");
-  }
-});
-
-io.on("disconnect", (socket) => {});
+io.on("connection", onSocketConnection);
 
 // Middleware
 app.use(logger);
