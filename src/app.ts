@@ -17,6 +17,7 @@ import { createServer } from "http";
 import { verifySocketAuthentication } from "./middlewares/socket";
 import { delayCallback } from "./utils/delay";
 import { onConnection as onSocketConnection } from "./socket/onConnection";
+import chatRouter from "./routes/chatRouter";
 
 const { PORT, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === "development";
@@ -48,6 +49,7 @@ app.use(verifyAuthentication);
 // Routing
 app.use("/api/recipes", recipesRouter);
 app.use("/api/user", userRouter);
+app.use("/api/chat", chatRouter);
 
 app.post("/api/flagRecipe", flagRecipe);
 
