@@ -4,7 +4,7 @@ import { openAiInstance } from "../ai/openAiInstance";
 import { getThreadIdFromSocket } from "../utils/socket/getThreadIdFromSocket";
 import ChatConversationModel from "../models/ChatConversationModel";
 import { v4 as uuidv4 } from "uuid";
-import { getNowISO } from "../controllers/chat/getNewConversation";
+import { getNowISO } from "../utils/date";
 
 export const onMessage = async (socket: Socket, payload: any) => {
   try {
@@ -31,24 +31,13 @@ export const onMessage = async (socket: Socket, payload: any) => {
       content: payload.content.text,
     });
 
-    console.log("THREAD Created");
-
     const run = await openAiInstance.beta.threads.runs.createAndPoll(threadId, {
       assistant_id: assistantInstance.id,
     });
 
     if (run.status === "completed") {
-      console.log("Run complete");
-
       const messagesResponse = await openAiInstance.beta.threads.messages.list(
         run.thread_id
-      );
-
-      console.log(
-        "Response recieved: ",
-        messagesResponse.data.map((e) =>
-          e.content[0].type === "text" ? e.content[0].text : ""
-        )
       );
 
       const messages = messagesResponse.data
@@ -87,9 +76,6 @@ export const onMessage = async (socket: Socket, payload: any) => {
 
         const conversationName =
           conversationNameCompletion.choices[0].message.content;
-        console.log("Conversation name", conversationName);
-
-        console.log("Storing new conversation");
 
         const newConversation = {
           id: uuidv4(),
