@@ -31,9 +31,16 @@ export const onMessage = async (socket: Socket, payload: any) => {
       content: payload.content.text,
     });
 
-    const run = await openAiInstance.beta.threads.runs.createAndPoll(threadId, {
-      assistant_id: assistantInstance.id,
-    });
+    const runPromise = openAiInstance.beta.threads.runs.createAndPoll(
+      threadId,
+      {
+        assistant_id: assistantInstance.id,
+      }
+    );
+
+    socket.emit("assistant_typing");
+
+    const run = await runPromise;
 
     if (run.status === "completed") {
       const messagesResponse = await openAiInstance.beta.threads.messages.list(
