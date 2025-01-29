@@ -5,6 +5,7 @@ import { getThreadIdFromSocket } from "../utils/socket/getThreadIdFromSocket";
 import ChatConversationModel from "../models/ChatConversationModel";
 import { v4 as uuidv4 } from "uuid";
 import { getNowISO } from "../utils/date";
+import { ASSISTANT_CHAT_MODEL, prompts } from "../ai/prompts";
 
 export const onMessage = async (socket: Socket, payload: any) => {
   try {
@@ -38,7 +39,7 @@ export const onMessage = async (socket: Socket, payload: any) => {
       }
     );
 
-    socket.emit("assistant_typing");
+    socket.emit("assistant_typing_start");
 
     const run = await runPromise;
 
@@ -64,19 +65,16 @@ export const onMessage = async (socket: Socket, payload: any) => {
           },
         }));
       socket.emit("update_messages", messages);
+      socket.emit("assistant_typing_end");
 
       if (isNewConversation) {
-        // Generate conversation name
-        // // Create and store new conversation
         const conversationNameCompletion =
           await openAiInstance.chat.completions.create({
-            model: "gpt-3.5-turbo",
+            model: ASSISTANT_CHAT_MODEL,
             messages: [
               {
                 role: "system",
-                content: `Generate a user-facing name to summarise this conversation between the user and an assistant, in 5 words or less, without any wrapping punctuation or: \n\n${JSON.stringify(
-                  messages
-                )}`,
+                content: prompts.GENERATE_CONVERSATION_NAME(messages),
               },
             ],
           });
