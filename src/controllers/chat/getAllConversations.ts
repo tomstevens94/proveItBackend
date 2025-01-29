@@ -1,14 +1,15 @@
 import { RequestHandler } from "express";
 import { HTTPStatusCodes } from "../../configs/HTTPStatusCodes";
 import ChatConversationModel from "../../models/ChatConversationModel";
-import { DateTime } from "luxon";
 
 export const getAllConversations: RequestHandler = async (req, res) => {
   try {
     const userId = req.headers["user-id"];
     if (!userId) return res.sendStatus(HTTPStatusCodes.Unauthorized);
 
-    const allConversations = await ChatConversationModel.find().sort({
+    const allConversations = await ChatConversationModel.find({
+      usersData: { $elemMatch: { userId } },
+    }).sort({
       lastUpdatedOn: -1,
     });
 
