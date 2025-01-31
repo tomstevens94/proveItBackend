@@ -28,7 +28,7 @@ export const onRejoinConversation = async (
       user:
         messageResponse.role === "assistant"
           ? { role: "assistant" }
-          : { role: "user", userId: socket.handshake.auth.userId },
+          : { role: "user", userId },
       content: {
         type: "text",
         text: messageResponse.content
