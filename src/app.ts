@@ -33,7 +33,7 @@ isDevelopment && app.use(artificialDelay);
 
 const io = new Server(server);
 
-io.use((_, next) => delayCallback(() => next(), 1000));
+// io.use((_, next) => delayCallback(() => next(), 1000));
 io.use(verifySocketAuthentication);
 
 io.on("connection", onSocketConnection);
