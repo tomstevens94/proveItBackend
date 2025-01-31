@@ -25,11 +25,15 @@ export const onMessage = async (socket: Socket, payload: any) => {
 
     console.log("Message received: ", payload);
 
-    // TODO: Payload validation
+    // TODO: Yup validation
+    if (typeof payload !== "object") return;
+
+    const messageText = payload?.content?.text;
+    if (typeof messageText !== "string") return;
 
     await openAiInstance.beta.threads.messages.create(threadId, {
       role: "user",
-      content: payload.content.text,
+      content: messageText,
     });
 
     const runPromise = openAiInstance.beta.threads.runs.createAndPoll(
@@ -92,6 +96,13 @@ export const onMessage = async (socket: Socket, payload: any) => {
         };
 
         await ChatConversationModel.create(newConversation);
+
+        socket.emit("invalidate_conversations");
+      } else {
+        await ChatConversationModel.findOneAndUpdate(
+          { threadId: threadId },
+          { lastUpdatedOn: getNowISO() }
+        );
 
         socket.emit("invalidate_conversations");
       }

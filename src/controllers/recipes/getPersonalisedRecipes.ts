@@ -15,17 +15,22 @@ export const getPersonalisedRecipes: RequestHandler = async (req, res) => {
   }
 
   try {
-    const popularRecipesQuery = {
-      _id: {
-        $in: [
-          new ObjectId("6499b754911584d5fc36e2de"),
-          new ObjectId("64d4ac735c127f006546f5e8"),
-          new ObjectId("66254c062d6bf8083bea281e"),
-          new ObjectId("669e21c8c2e6fdd3b23e3012"),
-        ],
-      },
-    };
-    const popularRecipes = await findRecipes(popularRecipesQuery);
+    const popularRecipeIds = [
+      new ObjectId("669e21c8c2e6fdd3b23e3012"),
+      new ObjectId("66254c062d6bf8083bea281e"),
+      new ObjectId("64d4ac735c127f006546f5e8"),
+      new ObjectId("6499b754911584d5fc36e2de"),
+    ];
+
+    // const popularRecipesQuery = {
+    //   _id: { $in: popularRecipeIds },
+    // };
+    let popularRecipes = await Promise.all(
+      popularRecipeIds.map((recipeId) => findRecipes({ _id: recipeId }))
+    );
+
+    popularRecipes = popularRecipes.flat();
+
     const recipeOfTheWeek = await findRecipes({
       _id: new ObjectId("64d4ac735c127f006546f5e8"),
     });
