@@ -18,6 +18,7 @@ import { verifySocketAuthentication } from "./middlewares/socket";
 import { delayCallback } from "./utils/delay";
 import { onConnection as onSocketConnection } from "./socket/onConnection";
 import chatRouter from "./routes/chatRouter";
+import { checkAppVersion } from "./middlewares/checkAppVersion";
 
 const { PORT, NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === "development";
@@ -28,6 +29,9 @@ isDevelopment && logIpAddress();
 
 const { app } = expressWs(express());
 const server = createServer(app);
+
+// Check client app is running on supported version
+app.use(checkAppVersion);
 
 isDevelopment && app.use(artificialDelay);
 
@@ -42,6 +46,7 @@ io.on("connection", onSocketConnection);
 app.use(logger);
 app.use(json());
 
+// Can be deleted once all users are updated to 1.5.0
 app.get("/api/app-info", getAppInfo);
 
 app.use(verifyAuthentication);

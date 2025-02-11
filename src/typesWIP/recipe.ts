@@ -44,6 +44,7 @@ export interface Recipe {
   description: string;
   creatorDetails: UserData;
   // TODO Remove communityRating - Removed from FE code as of v1.3.0
+  // Remove once all users forced to 1.5.0
   communityRating: number | null;
   rating?: {
     value: number | null;
