@@ -43,15 +43,16 @@ export const checkAppVersion: RequestHandler = (req, res, next) => {
     }
 
     if (Array.isArray(appVersion)) {
-      console.log("VERSION CANNOT BE ARRAY");
       throw new Error("App version header cannot be an array");
     }
 
-    if (getIsSupported(appVersion)) return next();
-
-    return res
-      .status(HTTPStatusCodes.BadRequest)
-      .json(new UnsupportedAppVersionError());
+    if (getIsSupported(appVersion)) {
+      return next();
+    } else {
+      return res
+        .status(HTTPStatusCodes.BadRequest)
+        .json(new UnsupportedAppVersionError());
+    }
   } catch (err) {
     console.log("Error getting app info", err);
     return res.sendStatus(HTTPStatusCodes.InternalServerError);
