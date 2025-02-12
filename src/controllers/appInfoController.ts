@@ -1,10 +1,11 @@
 import { RequestHandler } from "express";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
+import { minSupportedAppVersion } from "../configs/version";
 
 export const getAppInfo: RequestHandler = async (req, res) => {
   try {
     return res.status(HTTPStatusCodes.OK).json({
-      minSupportedVersion: "1.1.0",
+      minSupportedVersion: minSupportedAppVersion,
       appUrl: {
         ios: "https://apps.apple.com/gb/app/prove-it/id6475770604",
         android: "https://play.google.com/store/",

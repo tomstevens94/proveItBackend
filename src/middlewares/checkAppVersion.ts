@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { HTTPStatusCodes } from "../configs/HTTPStatusCodes";
+import { minSupportedAppVersion } from "../configs/version";
 
 const getNumberArrayFromVersionString = (
   versionString: string
@@ -13,8 +14,6 @@ const getNumberArrayFromVersionString = (
 };
 
 const getIsSupported = (appVersion: string) => {
-  const minSupportedAppVersion = "1.4.0";
-
   const [minMajor, minMinor, minPatch] = getNumberArrayFromVersionString(
     minSupportedAppVersion
   );
@@ -38,9 +37,13 @@ class UnsupportedAppVersionError extends Error {
 export const checkAppVersion: RequestHandler = (req, res, next) => {
   try {
     const appVersion = req.headers["app-version"];
+    // Users on older apps won't have app-version header
     if (!appVersion) {
-      throw new Error("No app version specified in request headers");
+      return next();
     }
+    // if (!appVersion) {
+    //   throw new Error("No app version specified in request headers");
+    // }
 
     if (Array.isArray(appVersion)) {
       throw new Error("App version header cannot be an array");
