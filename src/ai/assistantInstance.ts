@@ -11,6 +11,8 @@ export let assistantInstance: Assistant;
 export const createAssistant = async () => {
   if (assistantInstance) return;
 
+  console.log("Creating new assistant");
+
   openAiInstance.beta.assistants
     .create({
       name: ASSISTANT_NAME,
