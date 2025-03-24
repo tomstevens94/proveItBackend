@@ -33,10 +33,12 @@ isDevelopment && app.use(artificialDelay);
 
 const io = new Server(server);
 
-// io.use((_, next) => delayCallback(() => next(), 1000));
+console.log("before socket middleware");
 io.use(verifySocketAuthentication);
+console.log("after socket middleware");
 
 io.on("connection", onSocketConnection);
+console.log("after socket connection");
 
 // Middleware
 app.use(logger);
