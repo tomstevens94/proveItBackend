@@ -6,6 +6,7 @@ import { onRejoinConversation } from "./onRejoinConversation";
 import { onNewConversation } from "./onNewConversation";
 
 export const onConnection = async (socket: Socket) => {
+  console.log("Socket connected");
   const userId = socket.handshake.auth.userId;
 
   if (!userId || typeof userId !== "string") {

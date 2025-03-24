@@ -6,6 +6,8 @@ export const verifySocketAuthentication = async (
   socket: Socket,
   next: (err?: ExtendedError) => void
 ) => {
+  console.log("Verifying socket authentication");
+
   try {
     const idToken = socket.handshake.auth.idToken;
     if (!idToken) {
