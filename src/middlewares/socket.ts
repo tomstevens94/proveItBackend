@@ -19,6 +19,7 @@ export const verifySocketAuthentication = async (
 
     if (existingUser) {
       socket.handshake.auth.userId = userId;
+      console.log("Web socket authentication confirmed");
       return next();
     } else {
       throw new Error("User not found");
